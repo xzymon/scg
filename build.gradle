@@ -1,0 +1,34 @@
+plugins {
+	id 'java'
+	id 'war'
+}
+
+group 'com.xzymon'
+version '1.0-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api
+	implementation group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
+	implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
+	implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper
+	implementation group: 'org.apache.tomcat', name: 'tomcat-jasper', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el
+	implementation group: 'org.apache.tomcat', name: 'tomcat-jasper-el', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api
+	implementation group: 'org.apache.tomcat', name: 'tomcat-jsp-api', version: '10.0.4'
+
+
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+	useJUnitPlatform()
+}
