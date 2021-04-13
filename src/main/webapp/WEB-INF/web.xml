@@ -20,5 +20,7 @@
 		<url-pattern>/index.html</url-pattern>
 	</servlet-mapping>
 
-
+	<listener>
+		<listener-class>com.xzymon.scg.listeners.InitializationListener</listener-class>
+	</listener>
 </web-app>

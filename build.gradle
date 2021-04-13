@@ -14,15 +14,20 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api
 	implementation group: 'org.apache.tomcat', name: 'tomcat-servlet-api', version: '10.0.4'
 	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
-	implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.0.4'
-	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
-	implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '10.0.4'
-	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper
 	implementation group: 'org.apache.tomcat', name: 'tomcat-jasper', version: '10.0.4'
 	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jasper-el
 	implementation group: 'org.apache.tomcat', name: 'tomcat-jasper-el', version: '10.0.4'
 	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api
 	implementation group: 'org.apache.tomcat', name: 'tomcat-jsp-api', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api
+	implementation group: 'org.apache.tomcat', name: 'tomcat-websocket-api', version: '10.0.4'
+	// https://mvnrepository.com/artifact/org.json/json
+	implementation group: 'org.json', name: 'json', version: '20210307'
+
+
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
 
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'

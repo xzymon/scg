@@ -1,0 +1,41 @@
+.redCard {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color: #FF0000;
+}
+
+.blueCard {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color: #0000FF;
+}
+
+.greenCard {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color: #00FF00;
+}
+
+.blackCard {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color: #000000;
+}
+
+.yellowCard {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color: #FFFF00;
+}
+
+.emptyCard {
+    float:left;
+    width:200px;
+    height:200px;
+    background-color: #FFFFFF;
+}
