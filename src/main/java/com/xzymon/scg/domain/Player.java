@@ -6,6 +6,7 @@ public class Player {
 	private Long id;
 	private String name;
 	private List<Card> hand;
+	private String sessionId;
 
 	public Player(Long id, String name, List<Card> hand) {
 		this.id = id;
@@ -35,5 +36,13 @@ public class Player {
 
 	public void setHand(List<Card> hand) {
 		this.hand = hand;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
 	}
 }

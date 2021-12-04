@@ -5,20 +5,26 @@ import com.xzymon.scg.engine.GameManager;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.xzymon.scg.global.GlobalNames.GAMES_REGISTER_NAME;
 
 @ServerEndpoint("/gameDisplay")
 public class GameDisplayWebsocket {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GameDisplayWebsocket.class);
+
 	@OnOpen
 	public void open(Session session) {
 		GameDisplaySessionHandler handler = GameDisplaySessionHandlerFactory.getHandler();
+		LOGGER.info("Session opened: " + session.getId());
 		handler.addSession(session);
 	}
 
 	@OnClose
 	public void close(Session session) {
 		GameDisplaySessionHandler handler = GameDisplaySessionHandlerFactory.getHandler();
+		LOGGER.info("Session closed: " + session.getId());
 		handler.removeSession(session);
 	}
 

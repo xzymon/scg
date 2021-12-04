@@ -4,10 +4,17 @@
 			   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			   xsi:schemaLocation="http://logging.apache.org/log4j/2.0/config https://raw.githubusercontent.com/apache/logging-log4j2/master/log4j-core/src/main/resources/Log4j-config.xsd"
 			   status="info">
+	<Properties>
+		<Property name="filename">scg/root-$${sd:type}.log</Property>
+	</Properties>
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 		</Console>
+		<!--
+		<Appender type="info" name="">
+		</Appender>
+		-->
 	</Appenders>
 	<Loggers>
 		<Logger name="com.xzymon.scg.listeners" level="DEBUG">
@@ -15,6 +22,7 @@
 		</Logger>
 		<Root level="info">
 			<AppenderRef ref="STDOUT"/>
+			<!-- <AppenderRef ref="File"/> -->
 		</Root>
 	</Loggers>
 </Configuration>
