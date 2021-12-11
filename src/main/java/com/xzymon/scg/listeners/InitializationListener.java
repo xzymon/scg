@@ -5,6 +5,7 @@ import com.xzymon.scg.domain.CardCategory;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
 import com.xzymon.scg.engine.GameManager;
+import com.xzymon.scg.global.GlobalNames;
 import com.xzymon.scg.websockets.GameDisplaySessionHandler;
 import com.xzymon.scg.websockets.GameDisplaySessionHandlerFactory;
 import jakarta.servlet.ServletContextEvent;
@@ -30,7 +31,7 @@ public class InitializationListener implements ServletContextListener {
 		sce.getServletContext().setAttribute(GAMES_REGISTER_NAME, gm);
 		handler.setApplicationAttribute(GAMES_REGISTER_NAME, gm);
 		//TODO: zamienic na wersje bez podawania id - tj. na wersje z automatycznym przydzielaniem id
-		gm.addGame(helloGame(), 1L);
+		gm.addGame(helloGame(), GlobalNames.DEVELOPMENT_DEFAULT_GAME_ID);
 		LOGGER.info(String.format("Context initialization finished!"));
 	}
 

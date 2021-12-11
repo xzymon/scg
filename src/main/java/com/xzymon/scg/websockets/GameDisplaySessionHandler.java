@@ -5,6 +5,7 @@ import com.xzymon.scg.domain.Card;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
 import com.xzymon.scg.engine.GameManager;
+import com.xzymon.scg.global.GlobalNames;
 import jakarta.websocket.Session;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -19,8 +20,8 @@ public class GameDisplaySessionHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GameDisplaySessionHandler.class);
 
 	private static final String BROADCAST_LOG_MSG_FORMAT = "broadcast: message=[%1$s]";
-	private static final String BROADCAST_BUT_SESSION_LOG_MSG_FORMAT = "broadcastButSession: message=[%1$s], sessionId=[%2$s]";
-	private static final String SEND_ONLY_TO_SESSION_LOG_MSG_FORMAT = "setOnlyToSession: message=[%1$s], sessionId=[%2$s]";
+	private static final String BROADCAST_BUT_SESSION_LOG_MSG_FORMAT = "broadcastButSession: sessionId=[%2$s], message=[%1$s]";
+	private static final String SEND_ONLY_TO_SESSION_LOG_MSG_FORMAT = "setOnlyToSession: sessionId=[%2$s], message=[%1$s]";
 
 	private final Map<String, Object> applicationAttributesMap = new HashMap<>();
 	private final List<Session> sessions = new ArrayList<>();
@@ -92,7 +93,7 @@ public class GameDisplaySessionHandler {
 		GameDisplaySessionHandler handler = GameDisplaySessionHandlerFactory.getHandler();
 		GameManager gm = (GameManager) handler.getApplicationAttribute(GAMES_REGISTER_NAME);
 		Card topmostCard = null;
-		Game game = gm.getGameById(1L);
+		Game game = gm.getGameById(GlobalNames.DEVELOPMENT_DEFAULT_GAME_ID);
 		Player unoccupiedPlayer = game.getFirstUnoccupiedPlayer();
 		if (null != unoccupiedPlayer) {
 			unoccupiedPlayer.setSessionId(session.getId());

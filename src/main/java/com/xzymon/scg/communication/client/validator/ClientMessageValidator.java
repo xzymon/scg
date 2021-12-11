@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExampleValidator {
+public class ClientMessageValidator {
 
 	public static List<JsonValidationError> validate(JSONObject rawJsonObject) {
 		List<JsonValidationError> jsonValidationErrors = new ArrayList<>();
@@ -15,7 +15,10 @@ public class ExampleValidator {
 		JsonValidationWrapper jsonValidationWrapper = new JsonValidationWrapper(rawJsonObject);
 
 		//TODO: construct what to expect on nodes
-		//jsonValidationWrapper.expect();
+		jsonValidationWrapper
+				.expect(JsonKeys.GAME_EVENT).objectType().end()
+				.expect(JsonKeys.GAME_EVENT, JsonKeys.NAME).stringType().end()
+		;
 
 		jsonValidationWrapper.checkExpectedKeysPrescence();
 

@@ -12,7 +12,9 @@ public enum JsonKeys {
 	ARRAY_ELEMENT_6("[6]"),
 	ARRAY_ELEMENT_7("[7]"),
 	ARRAY_ELEMENT_8("[8]"),
-	ARRAY_ELEMENT_9("[9]");
+	ARRAY_ELEMENT_9("[9]"),
+	GAME_EVENT("gameEvent"),
+	NAME("name");
 
 
 	private String key;

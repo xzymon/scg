@@ -22,11 +22,12 @@ dependencies {
 	implementation group: 'org.apache.tomcat', name: 'tomcat-websocket-api', version: '10.0.4'
 	// https://mvnrepository.com/artifact/org.json/json
 	implementation group: 'org.json', name: 'json', version: '20210307'
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	implementation 'com.google.code.gson:gson:2.8.9'
 
-
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.14.1'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.15.0'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.15.0'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.15.0'
 
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'

@@ -68,7 +68,9 @@ function setCardColor(cardColor) {
 
 function pullNextCard() {
 	var message = {
-		"gameEventType" : "pullNextCard"
+		"gameEvent" : {
+			"name" : "pullNextCard"
+		}
 	};
 	socket.send(JSON.stringify(message));
 }

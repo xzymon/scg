@@ -1,7 +1,7 @@
 package com.xzymon.scg.communication.client;
 
 import com.xzymon.scg.communication.client.validator.JsonValidationError;
-import com.xzymon.scg.communication.client.validator.type.TypeValidator;
+import com.xzymon.scg.communication.client.validator.type.*;
 import com.xzymon.scg.communication.client.validator.value.ValueValidator;
 import com.xzymon.scg.communication.client.validator.value.common.*;
 import org.json.JSONArray;
@@ -533,6 +533,41 @@ public class JsonValidationWrapper {
 
 		public ExpectedNodeBuilder dependsOn(String dependencyName, Object dependencyValue) {
 			dependenciesMap.put(dependencyName, dependencyValue);
+			return this;
+		}
+
+		public ExpectedNodeBuilder boolType() {
+			this.setTypeValidator(new BooleanValidator());
+			return this;
+		}
+
+		public ExpectedNodeBuilder bigDecimalType() {
+			this.setTypeValidator(new BigDecimalValidator());
+			return this;
+		}
+
+		public ExpectedNodeBuilder intType() {
+			this.setTypeValidator(new IntegerValidator());
+			return this;
+		}
+
+		public ExpectedNodeBuilder arrayType() {
+			this.setTypeValidator(new JSONArrayValidator());
+			return this;
+		}
+
+		public ExpectedNodeBuilder objectType() {
+			this.setTypeValidator(new JSONObjectValidator());
+			return this;
+		}
+
+		public ExpectedNodeBuilder longType() {
+			this.setTypeValidator(new LongValidator());
+			return this;
+		}
+
+		public ExpectedNodeBuilder stringType() {
+			this.setTypeValidator(new StringValidator());
 			return this;
 		}
 

@@ -3,26 +3,26 @@
 			   xmlns="http://logging.apache.org/log4j/2.0/config"
 			   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			   xsi:schemaLocation="http://logging.apache.org/log4j/2.0/config https://raw.githubusercontent.com/apache/logging-log4j2/master/log4j-core/src/main/resources/Log4j-config.xsd"
-			   status="info">
+			   status="debug">
 	<Properties>
-		<Property name="filename">scg/root-$${sd:type}.log</Property>
+		<Property name="baseDir">logs/scg</Property>
 	</Properties>
 	<Appenders>
-		<Console name="STDOUT" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-		</Console>
-		<!--
-		<Appender type="info" name="">
-		</Appender>
-		-->
+		<RollingFile name="RollingFile" fileName="${baseDir}/app.log"
+					 filePattern="${baseDir}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd}.log.gz">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %p %c{1.} [%t] %m%n" />
+			<CronTriggeringPolicy schedule="0 0 0 * * ?"/>
+			<DefaultRolloverStrategy>
+				<Delete basePath="${baseDir}" maxDepth="2">
+					<IfFileName glob="*/app-*.log.gz" />
+					<IfLastModified age="60d" />
+				</Delete>
+			</DefaultRolloverStrategy>
+		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<Logger name="com.xzymon.scg.listeners" level="DEBUG">
-			<AppenderRef ref="STDOUT"/>
-		</Logger>
-		<Root level="info">
-			<AppenderRef ref="STDOUT"/>
-			<!-- <AppenderRef ref="File"/> -->
+		<Root level="ALL">
+			<AppenderRef ref="RollingFile"/>
 		</Root>
 	</Loggers>
 </Configuration>
