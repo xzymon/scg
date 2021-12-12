@@ -6,11 +6,13 @@ import org.json.JSONObject;
 public class MessageBuilder {
 	public static final String KEY_REGISTERED_PLAYERS = "registeredPlayers";
 	public static final String KEY_NEW_PLAYER = "newPlayer";
+	public static final String KEY_REMOVED_PLAYER = "removedPlayer";
 	public static final String KEY_ACTIONS = "actions";
 	public static final String KEY_TOPMOST_CARD = "topmostCard";
 
 	JSONArray registeredPlayers;
 	JSONObject newPlayer;
+	JSONObject removedPlayer;
 	JSONArray actions;
 	JSONObject topmostCard;
 
@@ -40,6 +42,18 @@ public class MessageBuilder {
 			}
 		} else {
 			this.newPlayer = null;
+		}
+		return this;
+	}
+
+	public MessageBuilder removedPlayer(PlayerBuilder removedPlayer) {
+		if (null != removedPlayer) {
+			JSONObject json = removedPlayer.build();
+			if (null != json) {
+				this.removedPlayer = json;
+			}
+		} else {
+			this.removedPlayer = null;
 		}
 		return this;
 	}
@@ -77,6 +91,10 @@ public class MessageBuilder {
 		}
 		if (null != newPlayer) {
 			result.put(KEY_NEW_PLAYER, newPlayer);
+			notNull = true;
+		}
+		if (null != removedPlayer) {
+			result.put(KEY_REMOVED_PLAYER, removedPlayer);
 			notNull = true;
 		}
 		if (null != actions && !actions.isEmpty()) {

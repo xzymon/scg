@@ -51,6 +51,7 @@ public class GameDisplaySessionHandler {
 
 	public void removeSession(Session session) {
 		sessions.remove(session);
+		unbindPlayerSession(session);
 	}
 
 	private void broadcast(JSONObject message) {
@@ -109,6 +110,18 @@ public class GameDisplaySessionHandler {
 
 			broadcastButSession(broadcastButNewPlayerMB.build(), session);
 			sendOnlyToSession(newPlayerMB.build(), session);
+		}
+	}
+
+	public void unbindPlayerSession(Session session) {
+		GameDisplaySessionHandler handler = GameDisplaySessionHandlerFactory.getHandler();
+		GameManager gm = (GameManager) handler.getApplicationAttribute(GAMES_REGISTER_NAME);
+		Game game = gm.getGameById(GlobalNames.DEVELOPMENT_DEFAULT_GAME_ID);
+		Player playerToRemove = game.getPlayerByBoundSessionId(session.getId());
+		if (null != playerToRemove) {
+			MessageBuilder broadcastButPlayerToRemoveMB = MessageBuilder.newInstance().removedPlayer(MessageHelper.fromPlayer(playerToRemove));
+			broadcastButSession(broadcastButPlayerToRemoveMB.build(), session);
+			playerToRemove.setSessionId(null);
 		}
 	}
 

@@ -19,6 +19,10 @@ function onMessage(event) {
 		createNewPlayerNode(jsonMsg.newPlayer);
 	}
 
+	if (jsonMsg.removedPlayer != null) {
+		removePlayer(jsonMsg.removedPlayer);
+	}
+
 	if (jsonMsg.topmostCard != null) {
 		if (jsonMsg.topmostCard.category != null) {
 			let tcCat = jsonMsg.topmostCard.category;
@@ -49,7 +53,7 @@ function createNewPlayerNode(player) {
 
 // Dodanie klasy, id i atrybutu title
 	li.className = 'player';
-	li.id = player.sessionId;
+	li.id = `player${player.sessionId}`;
 	li.setAttribute('title', 'New Item');
 
 // Tekst do środka wkłada się poprzez włożenie węzła typu #text
@@ -57,6 +61,19 @@ function createNewPlayerNode(player) {
 
 // podłączenie nowo utworzonego elementu do istniejącego drzewa dokumentu
 	document.querySelector('ul.collection').appendChild(li);
+}
+
+function removePlayer(player) {
+	console.log("Inside removePlayer");
+	console.log(player);
+
+	if (player.sessionId != null) {
+		var playerId = `player${player.sessionId}`;
+		const liPlayerToRemove = document.getElementById(playerId);
+		const parent = liPlayerToRemove.parentNode;
+		parent.removeChild(liPlayerToRemove);
+		console.log("removePlayer : removed");
+	}
 }
 
 function setCardColor(cardColor) {

@@ -57,6 +57,17 @@ public class Game {
 		return null;
 	}
 
+	public Player getPlayerByBoundSessionId(String boundSessionId) {
+		if (boundSessionId != null && players != null && players.size() > 0) {
+			for (Player player : players) {
+				if (boundSessionId.equals(player.getSessionId())) {
+					return player;
+				}
+			}
+		}
+		return null;
+	}
+
 	public List<Player> getPlayersWithSessionIds() {
 		if (players != null && players.size() > 0) {
 			List<Player> result = new ArrayList<>();
