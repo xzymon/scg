@@ -7,7 +7,7 @@ import com.xzymon.scg.domain.Player;
 public class MessageHelper {
 
 	public static PlayerBuilder fromPlayer(Player player) {
-		return PlayerBuilder.newInstance().name(player.getName()).sessionId(player.getSessionId());
+		return PlayerBuilder.newInstance().name(player.getName()).sessionId(player.getSessionId()).backOut(player.isBackOut()).active(player.isActive());
 	}
 
 	public static PlayerListBuilder registeredPlayersFromGame(Game game) {
@@ -23,6 +23,10 @@ public class MessageHelper {
 	}
 
 	public static CardBuilder topmostCardFromGame(Game game) {
-		return fromCard(game.getTopmostCard());
+		return fromCard(game.getLastPulledCard());
+	}
+
+	public static FrontStateBuilder frontStateActive(Boolean active) {
+		return FrontStateBuilder.newInstance().active(active);
 	}
 }

@@ -7,9 +7,13 @@ import java.util.List;
 public class PlayerBuilder {
 	public static final String KEY_NAME = "name";
 	public static final String KEY_SESSION_ID = "sessionId";
+	public static final String KEY_BACK_OUT = "backOut";
+	public static final String KEY_ACTIVE = "active";
 
 	private String name;
 	private String sessionId;
+	private Boolean backOut;
+	private Boolean active;
 
 	private PlayerBuilder() {
 	}
@@ -28,6 +32,16 @@ public class PlayerBuilder {
 		return this;
 	}
 
+	public PlayerBuilder backOut(Boolean backOut) {
+		this.backOut = backOut;
+		return this;
+	}
+
+	public PlayerBuilder active(Boolean active) {
+		this.active = active;
+		return this;
+	}
+
 	public JSONObject build() {
 		boolean notNull = false;
 		JSONObject builder = new JSONObject();
@@ -37,6 +51,14 @@ public class PlayerBuilder {
 		}
 		if (sessionId != null) {
 			builder.put(KEY_SESSION_ID, sessionId);
+			notNull = true;
+		}
+		if (backOut != null) {
+			builder.put(KEY_BACK_OUT, backOut);
+			notNull = true;
+		}
+		if (active != null) {
+			builder.put(KEY_ACTIVE, active);
 			notNull = true;
 		}
 		if (notNull) {

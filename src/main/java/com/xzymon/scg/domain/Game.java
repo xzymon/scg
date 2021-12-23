@@ -1,5 +1,7 @@
 package com.xzymon.scg.domain;
 
+import com.xzymon.scg.engine.PlayersCycle;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -10,9 +12,12 @@ public class Game {
 	private final AtomicInteger nextActionId = new AtomicInteger(1);
 	private List<Card> ongoingCards;
 	private Set<Player> players;
-	private List<Player> playerTurnSequence;
-	private Player activePlayer;
-	private Card topmostCard;
+	private PlayersCycle playersCycle;
+	private Card lastPulledCard;
+
+	public Game() {
+		this.playersCycle = new PlayersCycle();
+	}
 
 	public Long getId() {
 		return id;
@@ -81,27 +86,44 @@ public class Game {
 		return null;
 	}
 
-	public List<Player> getPlayerTurnSequence() {
-		return playerTurnSequence;
+	public void makeNextPlayerActive() {
+		playersCycle.next();
 	}
 
-	public void setPlayerTurnSequence(List<Player> playerTurnSequence) {
-		this.playerTurnSequence = playerTurnSequence;
+	public Card getNextCard() {
+		List<Card> newOngoingCards = new ArrayList<>();
+		Card pulledCard = null;
+		for (Card ongoingCard : ongoingCards) {
+			if (null == pulledCard) {
+				pulledCard = ongoingCard;
+			} else {
+				newOngoingCards.add(ongoingCard);
+			}
+		}
+		setOngoingCards(newOngoingCards);
+		if (null != pulledCard) {
+			setLastPulledCard(pulledCard);
+		}
+		return pulledCard;
+	}
+
+	public PlayersCycle getPlayersCycle() {
+		return playersCycle;
+	}
+
+	public void setPlayersCycle(PlayersCycle playersCycle) {
+		this.playersCycle = playersCycle;
 	}
 
 	public Player getActivePlayer() {
-		return activePlayer;
+		return playersCycle.getCurrent();
 	}
 
-	public void setActivePlayer(Player activePlayer) {
-		this.activePlayer = activePlayer;
+	public Card getLastPulledCard() {
+		return lastPulledCard;
 	}
 
-	public Card getTopmostCard() {
-		return topmostCard;
-	}
-
-	public void setTopmostCard(Card topmostCard) {
-		this.topmostCard = topmostCard;
+	public void setLastPulledCard(Card lastPulledCard) {
+		this.lastPulledCard = lastPulledCard;
 	}
 }

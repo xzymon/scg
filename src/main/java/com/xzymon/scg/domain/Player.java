@@ -6,7 +6,9 @@ public class Player {
 	private Long id;
 	private String name;
 	private List<Card> hand;
+	private boolean backOut;
 	private String sessionId;
+	private boolean active;
 
 	public Player(Long id, String name, List<Card> hand) {
 		this.id = id;
@@ -38,11 +40,27 @@ public class Player {
 		this.hand = hand;
 	}
 
+	public boolean isBackOut() {
+		return backOut;
+	}
+
+	public void setBackOut(boolean backOut) {
+		this.backOut = backOut;
+	}
+
 	public String getSessionId() {
 		return sessionId;
 	}
 
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

@@ -4,6 +4,7 @@ import com.xzymon.scg.communication.server.*;
 import com.xzymon.scg.domain.Card;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
+import com.xzymon.scg.engine.ClientMessageHandler;
 import com.xzymon.scg.engine.GameManager;
 import com.xzymon.scg.global.GlobalNames;
 import jakarta.websocket.Session;
@@ -21,10 +22,10 @@ public class GameDisplaySessionHandler {
 
 	private static final String BROADCAST_LOG_MSG_FORMAT = "broadcast: message=[%1$s]";
 	private static final String BROADCAST_BUT_SESSION_LOG_MSG_FORMAT = "broadcastButSession: sessionId=[%2$s], message=[%1$s]";
-	private static final String SEND_ONLY_TO_SESSION_LOG_MSG_FORMAT = "setOnlyToSession: sessionId=[%2$s], message=[%1$s]";
+	private static final String SEND_ONLY_TO_SESSION_LOG_MSG_FORMAT = "sendOnlyToSession: sessionId=[%2$s], message=[%1$s]";
 
 	private final Map<String, Object> applicationAttributesMap = new HashMap<>();
-	private final List<Session> sessions = new ArrayList<>();
+	private final Map<String, Session> sessions = new HashMap<>();
 
 	public void addApplicationAttribute(String attributeName, Object value) {
 		if (!applicationAttributesMap.containsKey(attributeName)) {
@@ -45,19 +46,19 @@ public class GameDisplaySessionHandler {
 	}
 
 	public void addSession(Session session) {
-		sessions.add(session);
+		sessions.put(session.getId(), session);
 		bindUnoccupiedPlayerToSession(session);
 	}
 
 	public void removeSession(Session session) {
-		sessions.remove(session);
+		sessions.remove(session.getId());
 		unbindPlayerSession(session);
 	}
 
 	private void broadcast(JSONObject message) {
 		String messageText = message.toString();
 		LOGGER.info(String.format(BROADCAST_LOG_MSG_FORMAT, messageText));
-		for (Session session : sessions) {
+		for (Session session : sessions.values()) {
 			try {
 				session.getBasicRemote().sendText(message.toString());
 			} catch (IOException e) {
@@ -69,7 +70,7 @@ public class GameDisplaySessionHandler {
 	private void broadcastButSession(JSONObject message, Session session) {
 		String messageText = message.toString();
 		LOGGER.info(String.format(BROADCAST_BUT_SESSION_LOG_MSG_FORMAT, messageText, session.getId()));
-		for (Session actualSession : sessions) {
+		for (Session actualSession : sessions.values()) {
 			if (!actualSession.equals(session)) {
 				try {
 					actualSession.getBasicRemote().sendText(messageText);
@@ -98,18 +99,27 @@ public class GameDisplaySessionHandler {
 		Player unoccupiedPlayer = game.getFirstUnoccupiedPlayer();
 		if (null != unoccupiedPlayer) {
 			unoccupiedPlayer.setSessionId(session.getId());
-			MessageBuilder broadcastButNewPlayerMB = MessageBuilder.newInstance().newPlayer(MessageHelper.fromPlayer(unoccupiedPlayer));
-			MessageBuilder newPlayerMB = MessageBuilder.newInstance().registeredPlayers(MessageHelper.registeredPlayersFromGame(game));
+			Map<String, MessageBuilder> messageBuildersMap = ClientMessageHandler.initSessionMessageBuilderMap(this);
+			game.getPlayersCycle().add(unoccupiedPlayer);
+			if (game.getActivePlayer() == null) {
+				game.makeNextPlayerActive();
+				messageBuildersMap.get(session.getId()).frontState(FrontStateBuilder.newInstance().active(true));
+			} else {
+				messageBuildersMap.get(session.getId()).frontState(FrontStateBuilder.newInstance().active(false));
+			}
 
-			topmostCard = game.getTopmostCard();
+			//MessageBuilder broadcastButNewPlayerMB = MessageBuilder.newInstance().newPlayer(MessageHelper.fromPlayer(unoccupiedPlayer));
+			MessageBuilder newPlayerMB = messageBuildersMap.get(session.getId());
+
+			topmostCard = game.getLastPulledCard();
 			if (topmostCard != null) {
 				CardBuilder topmostCardCB = MessageHelper.topmostCardFromGame(game);
-				broadcastButNewPlayerMB.topmostCard(topmostCardCB);
+				//broadcastButNewPlayerMB.topmostCard(topmostCardCB);
 				newPlayerMB.topmostCard(topmostCardCB);
 			}
 
-			broadcastButSession(broadcastButNewPlayerMB.build(), session);
-			sendOnlyToSession(newPlayerMB.build(), session);
+			ClientMessageHandler.extendByStateOfRegisteredPlayers(messageBuildersMap, game);
+			sendMessages(messageBuildersMap);
 		}
 	}
 
@@ -118,15 +128,31 @@ public class GameDisplaySessionHandler {
 		GameManager gm = (GameManager) handler.getApplicationAttribute(GAMES_REGISTER_NAME);
 		Game game = gm.getGameById(GlobalNames.DEVELOPMENT_DEFAULT_GAME_ID);
 		Player playerToRemove = game.getPlayerByBoundSessionId(session.getId());
+		boolean passTurnToNextPlayer = false;
+		String newActivePlayerSessionId = null;
 		if (null != playerToRemove) {
-			MessageBuilder broadcastButPlayerToRemoveMB = MessageBuilder.newInstance().removedPlayer(MessageHelper.fromPlayer(playerToRemove));
-			broadcastButSession(broadcastButPlayerToRemoveMB.build(), session);
+			Player activePlayer = game.getActivePlayer();
+			game.getPlayersCycle().remove(playerToRemove);
+			if (playerToRemove.equals(activePlayer)) {
+				passTurnToNextPlayer = true;
+				game.makeNextPlayerActive();
+				newActivePlayerSessionId = game.getActivePlayer().getSessionId();
+			}
+			Map<String, MessageBuilder> messageBuildersMap = ClientMessageHandler.initSessionMessageBuilderMap(this);
+			messageBuildersMap.remove(playerToRemove.getSessionId());
+			for (Map.Entry<String, MessageBuilder> entry : messageBuildersMap.entrySet()) {
+				entry.getValue().removedPlayer(MessageHelper.fromPlayer(playerToRemove));
+				if (passTurnToNextPlayer && entry.getKey().equals(newActivePlayerSessionId)) {
+					entry.getValue().frontState(MessageHelper.frontStateActive(true));
+				}
+			}
+			sendMessages(messageBuildersMap);
 			playerToRemove.setSessionId(null);
 		}
 	}
 
 	public void showTopmostCard(Game game) {
-		Card topmostCard = game.getTopmostCard();
+		Card topmostCard = game.getLastPulledCard();
 		if (null != topmostCard) {
 			MessageBuilder topmostCardMB = MessageBuilder.newInstance().topmostCard(MessageHelper.topmostCardFromGame(game));
 			broadcast(topmostCardMB.build());
@@ -146,9 +172,28 @@ public class GameDisplaySessionHandler {
 		}
 		game.setOngoingCards(newOngoingCards);
 		if (null != pulledCard) {
-			game.setTopmostCard(pulledCard);
+			game.setLastPulledCard(pulledCard);
 			showTopmostCard(game);
 		}
 	}
 
+	public void sendMessages(Map<String, MessageBuilder> sessionIdToMessageBuilderMap) {
+		for (Map.Entry<String, MessageBuilder> entry : sessionIdToMessageBuilderMap.entrySet()) {
+			Session entrySession = sessions.get(entry.getKey());
+			JSONObject json = entry.getValue().build();
+			if (null != entrySession) {
+				sendOnlyToSession(json, entrySession);
+			}
+		}
+	}
+
+	public Set<String> getSessionIds() {
+		Set<String> result = new HashSet<>();
+		if (null != sessions && !sessions.isEmpty()) {
+			for (String sessionId : sessions.keySet()) {
+				result.add(sessionId);
+			}
+		}
+		return result;
+	}
 }

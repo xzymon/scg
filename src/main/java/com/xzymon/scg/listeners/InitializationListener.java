@@ -58,11 +58,6 @@ public class InitializationListener implements ServletContextListener {
 		players.add(secondPlayer);
 		players.add(thirdPlayer);
 		game.setPlayers(players);
-		List<Player> turnSequence = new ArrayList<>();
-		turnSequence.add(firstPlayer);
-		turnSequence.add(secondPlayer);
-		turnSequence.add(thirdPlayer);
-		game.setPlayerTurnSequence(turnSequence);
 		return game;
 	}
 }

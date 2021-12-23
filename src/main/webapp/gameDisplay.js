@@ -10,8 +10,14 @@ function onMessage(event) {
 	globalMessage = jsonMsg;
 	if (jsonMsg.registeredPlayers != null) {
 		let regPlayers = jsonMsg.registeredPlayers;
+		let existingPlayerEl = null;
 		for (let rP = 0; rP < jsonMsg.registeredPlayers.length; rP++) {
-			createNewPlayerNode(regPlayers[rP]);
+			existingPlayerEl = document.getElementById(`player${regPlayers[rP].sessionId}`);
+			if (existingPlayerEl != null) {
+				setElementClassFromRegisteredPlayer(existingPlayerEl, regPlayers[rP]);
+			} else {
+				createNewPlayerNode(regPlayers[rP]);
+			}
 		}
 	}
 
@@ -43,6 +49,15 @@ function onMessage(event) {
 			}
 		}
 	}
+
+	if (jsonMsg.frontState != null) {
+		let pullNextCardBtn = document.getElementById('pullNextCardBtn');
+		if (jsonMsg.frontState.active === true) {
+			pullNextCardBtn.disabled = false;
+		} else {
+			pullNextCardBtn.disabled = true;
+		}
+	}
 }
 
 function createNewPlayerNode(player) {
@@ -52,7 +67,7 @@ function createNewPlayerNode(player) {
 	const li = document.createElement('li');
 
 // Dodanie klasy, id i atrybutu title
-	li.className = 'player';
+	setElementClassFromRegisteredPlayer(li, player);
 	li.id = `player${player.sessionId}`;
 	li.setAttribute('title', 'New Item');
 
@@ -61,6 +76,14 @@ function createNewPlayerNode(player) {
 
 // podłączenie nowo utworzonego elementu do istniejącego drzewa dokumentu
 	document.querySelector('ul.collection').appendChild(li);
+}
+
+function setElementClassFromRegisteredPlayer(element, registeredPlayer) {
+	if (registeredPlayer.active === true) {
+		element.className = 'activePlayer';
+	} else {
+		element.className = 'player';
+	}
 }
 
 function removePlayer(player) {
