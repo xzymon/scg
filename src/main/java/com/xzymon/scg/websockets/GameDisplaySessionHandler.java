@@ -159,24 +159,6 @@ public class GameDisplaySessionHandler {
 		}
 	}
 
-	public void getNextCardAndBroadcast(Game game) {
-		List<Card> oldOngoingCards = game.getOngoingCards();
-		List<Card> newOngoingCards = new ArrayList<>();
-		Card pulledCard = null;
-		for (Card ongoingCard : oldOngoingCards) {
-			if (null == pulledCard) {
-				pulledCard = ongoingCard;
-			} else {
-				newOngoingCards.add(ongoingCard);
-			}
-		}
-		game.setOngoingCards(newOngoingCards);
-		if (null != pulledCard) {
-			game.setLastPulledCard(pulledCard);
-			showTopmostCard(game);
-		}
-	}
-
 	public void sendMessages(Map<String, MessageBuilder> sessionIdToMessageBuilderMap) {
 		for (Map.Entry<String, MessageBuilder> entry : sessionIdToMessageBuilderMap.entrySet()) {
 			Session entrySession = sessions.get(entry.getKey());

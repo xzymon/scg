@@ -6,6 +6,7 @@ import com.xzymon.scg.communication.server.MessageBuilder;
 import com.xzymon.scg.communication.server.MessageHelper;
 import com.xzymon.scg.communication.server.PlayerListBuilder;
 import com.xzymon.scg.domain.Game;
+import com.xzymon.scg.engine.action.DiscardLastPulledCardGameAction;
 import com.xzymon.scg.engine.action.PassTurnToNextPlayerGameAction;
 import com.xzymon.scg.engine.action.PullNextCardGameAction;
 import com.xzymon.scg.global.GlobalNames;
@@ -35,6 +36,7 @@ public class ClientMessageHandler {
 					switch (clientMessage.getGameEvent().getName()) {
 						case "pullNextCard":
 							new PullNextCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+							new DiscardLastPulledCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							new PassTurnToNextPlayerGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							//sessionHandler.getNextCardAndBroadcast(currentGame);
 							break;

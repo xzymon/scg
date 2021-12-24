@@ -1,5 +1,6 @@
 package com.xzymon.scg.domain;
 
+import com.xzymon.scg.engine.CardManager;
 import com.xzymon.scg.engine.PlayersCycle;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Game {
 	private Long id;
 	private final AtomicInteger nextActionId = new AtomicInteger(1);
-	private List<Card> ongoingCards;
+	private CardManager cardManager;
 	private Set<Player> players;
 	private PlayersCycle playersCycle;
 	private Card lastPulledCard;
@@ -35,12 +36,12 @@ public class Game {
 		return nextActionId.getAndIncrement();
 	}
 
-	public List<Card> getOngoingCards() {
-		return ongoingCards;
+	public CardManager getCardManager() {
+		return cardManager;
 	}
 
-	public void setOngoingCards(List<Card> ongoingCards) {
-		this.ongoingCards = ongoingCards;
+	public void setCardManager(CardManager cardManager) {
+		this.cardManager = cardManager;
 	}
 
 	public Set<Player> getPlayers() {
@@ -91,16 +92,7 @@ public class Game {
 	}
 
 	public Card getNextCard() {
-		List<Card> newOngoingCards = new ArrayList<>();
-		Card pulledCard = null;
-		for (Card ongoingCard : ongoingCards) {
-			if (null == pulledCard) {
-				pulledCard = ongoingCard;
-			} else {
-				newOngoingCards.add(ongoingCard);
-			}
-		}
-		setOngoingCards(newOngoingCards);
+		Card pulledCard = cardManager.enhancedNext();
 		if (null != pulledCard) {
 			setLastPulledCard(pulledCard);
 		}
