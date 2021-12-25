@@ -74,12 +74,12 @@ public class InitializationListener implements ServletContextListener {
 
 		Set<Card> yellowCards = new HashSet<>();
 		yellowCards.add(new Card(1L, "1st yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(1L, "2nd yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(1L, "3rd yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(1L, "4th yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(1L, "5th yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(1L, "6th yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(1L, "7th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(2L, "2nd yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(3L, "3rd yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4L, "4th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(5L, "5th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(6L, "6th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(7L, "7th yellow card", CardCategory.YELLOW));
 		cardManager.addCardSubset(CardSetName.YELLOW, yellowCards);
 
 		Set<Card> redCards = new HashSet<>();

@@ -4,6 +4,7 @@ import com.xzymon.scg.communication.server.*;
 import com.xzymon.scg.domain.Card;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
+import com.xzymon.scg.engine.CardManager;
 import com.xzymon.scg.engine.ClientMessageHandler;
 import com.xzymon.scg.engine.GameManager;
 import com.xzymon.scg.global.GlobalNames;
@@ -96,6 +97,7 @@ public class GameDisplaySessionHandler {
 		GameManager gm = (GameManager) handler.getApplicationAttribute(GAMES_REGISTER_NAME);
 		Card topmostCard = null;
 		Game game = gm.getGameById(GlobalNames.DEVELOPMENT_DEFAULT_GAME_ID);
+		CardManager cardManager = game.getCardManager();
 		Player unoccupiedPlayer = game.getFirstUnoccupiedPlayer();
 		if (null != unoccupiedPlayer) {
 			unoccupiedPlayer.setSessionId(session.getId());
@@ -118,6 +120,15 @@ public class GameDisplaySessionHandler {
 				newPlayerMB.topmostCard(topmostCardCB);
 			}
 
+			// give player 3 cards - as its hand
+			List<Card> playerHand = new LinkedList<>();
+			playerHand.add(cardManager.enhancedNext());
+			playerHand.add(cardManager.enhancedNext());
+			playerHand.add(cardManager.enhancedNext());
+			unoccupiedPlayer.setHand(playerHand);
+
+			newPlayerMB.playerHand(MessageHelper.fromCards(playerHand));
+
 			ClientMessageHandler.extendByStateOfRegisteredPlayers(messageBuildersMap, game);
 			sendMessages(messageBuildersMap);
 		}
@@ -138,6 +149,15 @@ public class GameDisplaySessionHandler {
 				game.makeNextPlayerActive();
 				newActivePlayerSessionId = game.getActivePlayer().getSessionId();
 			}
+
+			List<Card> playersCardsToDiscard = playerToRemove.getHand();
+			if (null != playersCardsToDiscard && !playersCardsToDiscard.isEmpty()) {
+				CardManager cardManager = game.getCardManager();
+				for (Card card : playersCardsToDiscard) {
+					cardManager.discard(card);
+				}
+			}
+
 			Map<String, MessageBuilder> messageBuildersMap = ClientMessageHandler.initSessionMessageBuilderMap(this);
 			messageBuildersMap.remove(playerToRemove.getSessionId());
 			for (Map.Entry<String, MessageBuilder> entry : messageBuildersMap.entrySet()) {

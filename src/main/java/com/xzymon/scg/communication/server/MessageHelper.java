@@ -4,6 +4,8 @@ import com.xzymon.scg.domain.Card;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
 
+import java.util.List;
+
 public class MessageHelper {
 
 	public static PlayerBuilder fromPlayer(Player player) {
@@ -20,6 +22,14 @@ public class MessageHelper {
 
 	public static CardBuilder fromCard(Card card) {
 		return CardBuilder.newInstance().id(card.getId()).description(card.getDescription()).category(card.getCategory().toString());
+	}
+
+	public static CardListBuilder fromCards(List<Card> cards) {
+		CardListBuilder cardListBuilder = CardListBuilder.newInstance();
+		for (Card card : cards) {
+			cardListBuilder.add(fromCard(card));
+		}
+		return cardListBuilder;
 	}
 
 	public static CardBuilder topmostCardFromGame(Game game) {
