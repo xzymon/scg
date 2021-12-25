@@ -10,6 +10,7 @@ public class MessageBuilder {
 	public static final String KEY_ACTIONS = "actions";
 	public static final String KEY_TOPMOST_CARD = "topmostCard";
 	public static final String KEY_FRONT_STATE = "frontState";
+	public static final String KEY_PLAYER_HAND = "playerHand";
 
 	JSONArray registeredPlayers;
 	JSONObject newPlayer;
@@ -17,6 +18,7 @@ public class MessageBuilder {
 	JSONArray actions;
 	JSONObject topmostCard;
 	JSONObject frontState;
+	JSONArray playerHand;
 
 	private MessageBuilder() {}
 
@@ -96,6 +98,18 @@ public class MessageBuilder {
 		return this;
 	}
 
+	public MessageBuilder playerHand(CardListBuilder playerHand) {
+		if (null != playerHand) {
+			JSONArray json = playerHand.build();
+			if (!json.isEmpty()) {
+				this.playerHand = json;
+			}
+		} else {
+			this.playerHand = null;
+		}
+		return this;
+	}
+
 	public JSONObject build() {
 		boolean notNull = false;
 		JSONObject result = new JSONObject();
@@ -121,6 +135,10 @@ public class MessageBuilder {
 		}
 		if (null != frontState) {
 			result.put(KEY_FRONT_STATE, frontState);
+			notNull = true;
+		}
+		if (null != playerHand && !playerHand.isEmpty()) {
+			result.put(KEY_PLAYER_HAND, playerHand);
 			notNull = true;
 		}
 		if (notNull) {

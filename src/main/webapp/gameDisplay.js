@@ -32,21 +32,8 @@ function onMessage(event) {
 	if (jsonMsg.topmostCard != null) {
 		if (jsonMsg.topmostCard.category != null) {
 			let tcCat = jsonMsg.topmostCard.category;
-			if (tcCat == "RED") {
-				setCardColor('redCard');
-			}
-			if (tcCat == "YELLOW") {
-				setCardColor('yellowCard');
-			}
-			if (tcCat == "GREEN") {
-				setCardColor('greenCard');
-			}
-			if (tcCat == "BLUE") {
-				setCardColor('blueCard');
-			}
-			if (tcCat == "BLACK") {
-				setCardColor('blackCard');
-			}
+			let topmostCardDiv = document.getElementById("topmostCard");
+			setCardClassBasedOnCategory(topmostCardDiv, tcCat);
 		}
 	}
 
@@ -58,6 +45,47 @@ function onMessage(event) {
 			pullNextCardBtn.disabled = true;
 		}
 	}
+
+	if (jsonMsg.playerHand != null) {
+		let playerHand = jsonMsg.playerHand;
+		if (playerHand.length > 0) {
+			for (let phIdx = 0; phIdx < playerHand.length; phIdx++) {
+				createNewCardOnHand(playerHand[phIdx]);
+			}
+		}
+	}
+}
+
+function setCardClassBasedOnCategory(cardDiv, category) {
+	if (category == "RED") {
+		setCardColor(cardDiv, 'redCard');
+	}
+	if (category == "YELLOW") {
+		setCardColor(cardDiv, 'yellowCard');
+	}
+	if (category == "GREEN") {
+		setCardColor(cardDiv, 'greenCard');
+	}
+	if (category == "BLUE") {
+		setCardColor(cardDiv, 'blueCard');
+	}
+	if (category == "BLACK") {
+		setCardColor(cardDiv,'blackCard');
+	}
+}
+
+function createNewCardOnHand(card) {
+	console.log("Inside createNewCardOnHand");
+	console.log(card);
+
+	const cardDiv = document.createElement('div');
+
+	// to nie jest unikalny id !!!
+	cardDiv.id = `cardOnHand${card.id}`;
+	setCardClassBasedOnCategory(cardDiv, card.category);
+
+	document.getElementById('handDiv').appendChild(cardDiv);
+
 }
 
 function createNewPlayerNode(player) {
@@ -102,6 +130,10 @@ function removePlayer(player) {
 function setCardColor(cardColor) {
 	var content = document.getElementById("card");
 	content.setAttribute('class', cardColor);
+}
+
+function setCardColor(card, color) {
+	card.setAttribute('class', color);
 }
 
 //------------------------------

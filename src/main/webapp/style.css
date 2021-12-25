@@ -7,6 +7,12 @@
     background-color: navy;
 }
 
+.centralArea {
+    width: 100%;
+    height: 300px;
+    background-color: aliceblue;
+}
+
 .redCard {
     float:left;
     width:200px;
