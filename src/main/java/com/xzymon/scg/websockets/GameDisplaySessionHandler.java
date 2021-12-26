@@ -141,13 +141,17 @@ public class GameDisplaySessionHandler {
 		Player playerToRemove = game.getPlayerByBoundSessionId(session.getId());
 		boolean passTurnToNextPlayer = false;
 		String newActivePlayerSessionId = null;
+		Player newActivePlayer = null;
 		if (null != playerToRemove) {
 			Player activePlayer = game.getActivePlayer();
 			game.getPlayersCycle().remove(playerToRemove);
 			if (playerToRemove.equals(activePlayer)) {
-				passTurnToNextPlayer = true;
 				game.makeNextPlayerActive();
-				newActivePlayerSessionId = game.getActivePlayer().getSessionId();
+				newActivePlayer = game.getActivePlayer();
+				if (null != newActivePlayer) {
+					newActivePlayerSessionId = newActivePlayer.getSessionId();
+					passTurnToNextPlayer = true;
+				}
 			}
 
 			List<Card> playersCardsToDiscard = playerToRemove.getHand();
