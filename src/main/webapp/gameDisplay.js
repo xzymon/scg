@@ -44,11 +44,15 @@ function onMessage(event) {
 
 	if (jsonMsg.frontState != null) {
 		let pullNextCardBtn = document.getElementById('pullNextCardBtn');
-		if (jsonMsg.frontState.active === true) {
+		if (jsonMsg.frontState.activePullCard === true) {
 			pullNextCardBtn.disabled = false;
-			GUI.activateHand(document.getElementById('handDiv'));
 		} else {
 			pullNextCardBtn.disabled = true;
+		}
+
+		if (jsonMsg.frontState.activeHand === true) {
+			GUI.activateHand(document.getElementById('handDiv'));
+		} else {
 			GUI.deactivateHand(document.getElementById('handDiv'));
 		}
 	}

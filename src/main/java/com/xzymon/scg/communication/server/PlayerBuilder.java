@@ -9,11 +9,13 @@ public class PlayerBuilder {
 	public static final String KEY_SESSION_ID = "sessionId";
 	public static final String KEY_BACK_OUT = "backOut";
 	public static final String KEY_ACTIVE = "active";
+	public static final String KEY_PULL_CARD = "pullCard";
 
 	private String name;
 	private String sessionId;
 	private Boolean backOut;
 	private Boolean active;
+	private Boolean pullCard;
 
 	private PlayerBuilder() {
 	}
@@ -42,6 +44,11 @@ public class PlayerBuilder {
 		return this;
 	}
 
+	public PlayerBuilder pullCard(Boolean pullCard) {
+		this.pullCard = pullCard;
+		return this;
+	}
+
 	public JSONObject build() {
 		boolean notNull = false;
 		JSONObject builder = new JSONObject();
@@ -59,6 +66,10 @@ public class PlayerBuilder {
 		}
 		if (active != null) {
 			builder.put(KEY_ACTIVE, active);
+			notNull = true;
+		}
+		if (pullCard != null) {
+			builder.put(KEY_PULL_CARD, pullCard);
 			notNull = true;
 		}
 		if (notNull) {

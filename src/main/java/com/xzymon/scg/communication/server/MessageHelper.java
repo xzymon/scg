@@ -9,7 +9,7 @@ import java.util.List;
 public class MessageHelper {
 
 	public static PlayerBuilder fromPlayer(Player player) {
-		return PlayerBuilder.newInstance().name(player.getName()).sessionId(player.getSessionId()).backOut(player.isBackOut()).active(player.isActive());
+		return PlayerBuilder.newInstance().name(player.getName()).sessionId(player.getSessionId()).backOut(player.isBackOut()).active(player.isActive()).pullCard(player.canPullCard());
 	}
 
 	public static PlayerListBuilder registeredPlayersFromGame(Game game) {
@@ -48,7 +48,13 @@ public class MessageHelper {
 		return fromCard(game.getTopmostCard());
 	}
 
-	public static FrontStateBuilder frontStateActive(Boolean active) {
-		return FrontStateBuilder.newInstance().active(active);
+	public static FrontStateBuilder frontStateActive(Boolean pullCard, Boolean hand) {
+		return FrontStateBuilder.newInstance().activePullCard(pullCard).activeHand(hand);
+	}
+
+	public static FrontStateBuilder frontStateFromPlayer(Player player) {
+		boolean pullCard = player.isActive() && player.canPullCard();
+		boolean hand = player.isActive() && !player.canPullCard();
+		return FrontStateBuilder.newInstance().activePullCard(pullCard).activeHand(hand);
 	}
 }

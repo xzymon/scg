@@ -93,11 +93,7 @@ public class Game {
 	}
 
 	public Card getNextCard() {
-		Card pulledCard = cardManager.enhancedNext();
-		if (null != pulledCard) {
-			setLastPulledCard(pulledCard);
-		}
-		return pulledCard;
+		return cardManager.enhancedNext();
 	}
 
 	public PlayersCycle getPlayersCycle() {
