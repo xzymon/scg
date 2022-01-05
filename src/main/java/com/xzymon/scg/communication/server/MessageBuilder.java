@@ -7,18 +7,16 @@ public class MessageBuilder {
 	public static final String KEY_REGISTERED_PLAYERS = "registeredPlayers";
 	public static final String KEY_NEW_PLAYER = "newPlayer";
 	public static final String KEY_REMOVED_PLAYER = "removedPlayer";
-	public static final String KEY_ACTIONS = "actions";
 	public static final String KEY_TOPMOST_CARD = "topmostCard";
 	public static final String KEY_FRONT_STATE = "frontState";
 	public static final String KEY_PLAYER_HAND = "playerHand";
 
-	JSONArray registeredPlayers;
-	JSONObject newPlayer;
-	JSONObject removedPlayer;
-	JSONArray actions;
-	JSONObject topmostCard;
-	JSONObject frontState;
-	JSONArray playerHand;
+	PlayerListBuilder registeredPlayers;
+	PlayerBuilder newPlayer;
+	PlayerBuilder removedPlayer;
+	CardBuilder topmostCard;
+	FrontStateBuilder frontState;
+	HandBuilder playerHand;
 
 	private MessageBuilder() {}
 
@@ -27,117 +25,134 @@ public class MessageBuilder {
 	}
 
 	public MessageBuilder registeredPlayers(PlayerListBuilder registeredPlayers) {
-		if (null != registeredPlayers) {
-			JSONArray json = registeredPlayers.build();
-			if (!json.isEmpty()) {
-				this.registeredPlayers = json;
-			}
-		} else {
-			this.registeredPlayers = null;
-		}
+		this.registeredPlayers = registeredPlayers;
 		return this;
+	}
+
+	private JSONArray buildRegisteredPlayers() {
+		if (null != registeredPlayers) {
+			JSONArray array = registeredPlayers.build();
+			if (!array.isEmpty()) {
+				return array;
+			}
+		}
+		return null;
 	}
 
 	public MessageBuilder newPlayer(PlayerBuilder newPlayer) {
-		if (null != newPlayer) {
-			JSONObject json = newPlayer.build();
-			if (null != json) {
-				this.newPlayer = json;
-			}
-		} else {
-			this.newPlayer = null;
-		}
+		this.newPlayer = newPlayer;
 		return this;
+	}
+
+	public JSONObject buildNewPlayer() {
+		if (null != newPlayer) {
+			return newPlayer.build();
+		}
+		return null;
 	}
 
 	public MessageBuilder removedPlayer(PlayerBuilder removedPlayer) {
-		if (null != removedPlayer) {
-			JSONObject json = removedPlayer.build();
-			if (null != json) {
-				this.removedPlayer = json;
-			}
-		} else {
-			this.removedPlayer = null;
-		}
+		this.removedPlayer = removedPlayer;
 		return this;
 	}
 
-	public MessageBuilder actions(PlayerListBuilder registeredPlayers) {
-		if (null != registeredPlayers) {
-			JSONArray json = registeredPlayers.build();
-			if (!json.isEmpty()) {
-				this.registeredPlayers = json;
-			}
-		} else {
-			this.registeredPlayers = null;
+	public JSONObject buildRemovedPlayer() {
+		if (null != removedPlayer) {
+			return removedPlayer.build();
 		}
-		return this;
+		return null;
 	}
 
 	public MessageBuilder topmostCard(CardBuilder topmostCard) {
-		if (null != topmostCard) {
-			JSONObject json = topmostCard.build();
-			if (null != json) {
-				this.topmostCard = json;
-			}
-		} else {
-			this.topmostCard = null;
-		}
+		this.topmostCard = topmostCard;
 		return this;
+	}
+
+	public JSONObject buildTopmostCard() {
+		if (null != topmostCard) {
+			return topmostCard.build();
+		}
+		return null;
 	}
 
 	public MessageBuilder frontState(FrontStateBuilder frontState) {
-		if (null != frontState) {
-			JSONObject json = frontState.build();
-			if (null != json) {
-				this.frontState = json;
-			}
-		} else {
-			this.frontState = null;
-		}
+		this.frontState = frontState;
 		return this;
 	}
 
-	public MessageBuilder playerHand(CardListBuilder playerHand) {
-		if (null != playerHand) {
-			JSONArray json = playerHand.build();
-			if (!json.isEmpty()) {
-				this.playerHand = json;
-			}
-		} else {
-			this.playerHand = null;
+	public JSONObject buildFrontState() {
+		if (null != frontState) {
+			return frontState.build();
 		}
+		return null;
+	}
+
+	public MessageBuilder playerHand(HandBuilder handBuilder) {
+		this.playerHand = handBuilder;
+		return this;
+	}
+
+	public JSONObject buildPlayerHand() {
+		if (null != playerHand) {
+			return playerHand.build();
+		}
+		return null;
+	}
+
+	public MessageBuilder removeOnPlayerHand(CardBuilder cardBuilder) {
+		if (null == playerHand) {
+			playerHand = HandBuilder.newInstance();
+		}
+		playerHand.addRemovedCard(cardBuilder);
+		return this;
+	}
+
+	public MessageBuilder maintainOnPlayerHand(CardBuilder cardBuilder) {
+		if (null == playerHand) {
+			playerHand = HandBuilder.newInstance();
+		}
+		playerHand.addMaintainedCard(cardBuilder);
+		return this;
+	}
+
+	public MessageBuilder newOnPlayerHand(CardBuilder cardBuilder) {
+		if (null == playerHand) {
+			playerHand = HandBuilder.newInstance();
+		}
+		playerHand.addNewCard(cardBuilder);
 		return this;
 	}
 
 	public JSONObject build() {
 		boolean notNull = false;
 		JSONObject result = new JSONObject();
-		if (null != registeredPlayers && !registeredPlayers.isEmpty()) {
+		JSONArray registeredPlayers = buildRegisteredPlayers();
+		if (null != registeredPlayers) {
 			result.put(KEY_REGISTERED_PLAYERS, registeredPlayers);
 			notNull = true;
 		}
+		JSONObject newPlayer = buildNewPlayer();
 		if (null != newPlayer) {
 			result.put(KEY_NEW_PLAYER, newPlayer);
 			notNull = true;
 		}
+		JSONObject removedPlayer = buildRemovedPlayer();
 		if (null != removedPlayer) {
 			result.put(KEY_REMOVED_PLAYER, removedPlayer);
 			notNull = true;
 		}
-		if (null != actions && !actions.isEmpty()) {
-			result.put(KEY_ACTIONS, actions);
-			notNull = true;
-		}
+		JSONObject topmostCard = buildTopmostCard();
 		if (null != topmostCard) {
 			result.put(KEY_TOPMOST_CARD, topmostCard);
 			notNull = true;
 		}
+		JSONObject frontState = buildFrontState();
 		if (null != frontState) {
 			result.put(KEY_FRONT_STATE, frontState);
 			notNull = true;
 		}
-		if (null != playerHand && !playerHand.isEmpty()) {
+		JSONObject playerHand = buildPlayerHand();
+		if (null != playerHand) {
 			result.put(KEY_PLAYER_HAND, playerHand);
 			notNull = true;
 		}

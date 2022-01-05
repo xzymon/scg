@@ -82,6 +82,13 @@ public class GameDisplaySessionHandler {
 		}
 	}
 
+	public void sendToSessionById(MessageBuilder messageBuilder, String sessionId) {
+		Session entrySession = sessions.get(sessionId);
+		JSONObject json = messageBuilder.build();
+		if (null != entrySession) {
+			sendOnlyToSession(json, entrySession);
+		}
+	}
 	private void sendOnlyToSession(JSONObject message, Session session) {
 		String messageText = message.toString();
 		LOGGER.info(String.format(SEND_ONLY_TO_SESSION_LOG_MSG_FORMAT, messageText, session.getId()));
@@ -127,7 +134,7 @@ public class GameDisplaySessionHandler {
 			playerHand.add(cardManager.enhancedNext());
 			unoccupiedPlayer.setHand(playerHand);
 
-			newPlayerMB.playerHand(MessageHelper.fromCards(playerHand));
+			newPlayerMB.playerHand(HandBuilder.newInstance().newCards(MessageHelper.fromCards(playerHand)));
 
 			ClientMessageHandler.extendByStateOfRegisteredPlayers(messageBuildersMap, game);
 			sendMessages(messageBuildersMap);

@@ -55,38 +55,38 @@ public class InitializationListener implements ServletContextListener {
 		CardManager cardManager = new CardManager();
 
 		Set<Card> blackCards = new HashSet<>();
-		blackCards.add(new Card(1L, "1st black card", CardCategory.BLACK));
+		blackCards.add(new Card(1001L, "1st black card", CardCategory.BLACK));
 		cardManager.addCardSubset(CardSetName.BLACK, blackCards);
 
 		Set<Card> blueCards = new HashSet<>();
-		blueCards.add(new Card(1L, "1st blue card", CardCategory.BLUE));
-		blueCards.add(new Card(2L, "2nd blue card", CardCategory.BLUE));
-		blueCards.add(new Card(3L, "3rd blue card", CardCategory.BLUE));
-		blueCards.add(new Card(4L, "4th blue card", CardCategory.BLUE));
-		blueCards.add(new Card(5L, "5th blue card", CardCategory.BLUE));
+		blueCards.add(new Card(2001L, "1st blue card", CardCategory.BLUE));
+		blueCards.add(new Card(2002L, "2nd blue card", CardCategory.BLUE));
+		blueCards.add(new Card(2003L, "3rd blue card", CardCategory.BLUE));
+		blueCards.add(new Card(2004L, "4th blue card", CardCategory.BLUE));
+		blueCards.add(new Card(2005L, "5th blue card", CardCategory.BLUE));
 		cardManager.addCardSubset(CardSetName.BLUE, blueCards);
 
 		Set<Card> greenCards = new HashSet<>();
-		greenCards.add(new Card(1L, "1st green card", CardCategory.GREEN));
-		greenCards.add(new Card(2L, "2nd green card", CardCategory.GREEN));
-		greenCards.add(new Card(3L, "3rd green card", CardCategory.GREEN));
+		greenCards.add(new Card(3001L, "1st green card", CardCategory.GREEN));
+		greenCards.add(new Card(3002L, "2nd green card", CardCategory.GREEN));
+		greenCards.add(new Card(3003L, "3rd green card", CardCategory.GREEN));
 		cardManager.addCardSubset(CardSetName.GREEN, greenCards);
 
 		Set<Card> yellowCards = new HashSet<>();
-		yellowCards.add(new Card(1L, "1st yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(2L, "2nd yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(3L, "3rd yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(4L, "4th yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(5L, "5th yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(6L, "6th yellow card", CardCategory.YELLOW));
-		yellowCards.add(new Card(7L, "7th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4001L, "1st yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4002L, "2nd yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4003L, "3rd yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4004L, "4th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4005L, "5th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4006L, "6th yellow card", CardCategory.YELLOW));
+		yellowCards.add(new Card(4007L, "7th yellow card", CardCategory.YELLOW));
 		cardManager.addCardSubset(CardSetName.YELLOW, yellowCards);
 
 		Set<Card> redCards = new HashSet<>();
-		redCards.add(new Card(1L, "1st red card", CardCategory.RED));
-		redCards.add(new Card(2L, "2nd red card", CardCategory.RED));
-		redCards.add(new Card(3L, "3rd red card", CardCategory.RED));
-		redCards.add(new Card(4L, "4th red card", CardCategory.RED));
+		redCards.add(new Card(5001L, "1st red card", CardCategory.RED));
+		redCards.add(new Card(5002L, "2nd red card", CardCategory.RED));
+		redCards.add(new Card(5003L, "3rd red card", CardCategory.RED));
+		redCards.add(new Card(5004L, "4th red card", CardCategory.RED));
 		cardManager.addCardSubset(CardSetName.RED, redCards);
 
 		cardManager.initStackFromSubsets(Arrays.asList(CardSetName.BLACK, CardSetName.BLUE, CardSetName.YELLOW, CardSetName.RED));

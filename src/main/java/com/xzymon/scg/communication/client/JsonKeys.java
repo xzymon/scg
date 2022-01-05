@@ -14,7 +14,8 @@ public enum JsonKeys {
 	ARRAY_ELEMENT_8("[8]"),
 	ARRAY_ELEMENT_9("[9]"),
 	GAME_EVENT("gameEvent"),
-	NAME("name");
+	NAME("name"),
+	CID("cid");
 
 
 	private String key;

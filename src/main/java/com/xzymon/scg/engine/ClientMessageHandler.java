@@ -2,13 +2,14 @@ package com.xzymon.scg.engine;
 
 import com.xzymon.scg.communication.client.ClientMessage;
 import com.xzymon.scg.communication.client.JsonKeys;
+import com.xzymon.scg.communication.server.FrontStateBuilder;
 import com.xzymon.scg.communication.server.MessageBuilder;
 import com.xzymon.scg.communication.server.MessageHelper;
 import com.xzymon.scg.communication.server.PlayerListBuilder;
+import com.xzymon.scg.domain.Card;
 import com.xzymon.scg.domain.Game;
-import com.xzymon.scg.engine.action.DiscardLastPulledCardGameAction;
-import com.xzymon.scg.engine.action.PassTurnToNextPlayerGameAction;
-import com.xzymon.scg.engine.action.PullNextCardGameAction;
+import com.xzymon.scg.domain.Player;
+import com.xzymon.scg.engine.action.*;
 import com.xzymon.scg.global.GlobalNames;
 import com.xzymon.scg.websockets.GameDisplaySessionHandler;
 import org.slf4j.Logger;
@@ -22,7 +23,9 @@ public class ClientMessageHandler {
 
 	private static final String SESSION_ID_MSG_PREFIX = "[sessionId: %1$s] ";
 	private static final String POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX = " Might be a frontend security problem.";
+
 	private static final String UNKNOWN_GAME_EVENT_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Unknown " + JsonKeys.GAME_EVENT.getKey() + "." + JsonKeys.NAME.getKey() + ": %2$s";
+	private static final String INVALID_CARD_PLAYED_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Client request invalid. There's no such card { cid: %2$s } on player's hand!" + POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX;
 	private static final String PLAYER_TURN_SEQUENCE_BREACH_DETECTED_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Player tried to perform action, but has no right to perform it now!" + POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX;
 	private static final String SPECTATOR_ACTION_DETECTED_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Spectator tried to perform action, but spectators have no right to perform any action!" + POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX;
 
@@ -32,13 +35,33 @@ public class ClientMessageHandler {
 		if (defensiveCheckDoesInvocationComeFromPlayersSession(currentGame, sessionId)) {
 			if (clientMessage.getGameEvent() != null) {
 				if (defensiveCheckHasPlayerRightToPerformAction(currentGame, sessionId)) {
+					Player activePlayer = currentGame.getActivePlayer();
 					Map<String, MessageBuilder> sessionIdToMessageBuilderMap = initSessionMessageBuilderMap(sessionHandler);
+					LOGGER.info("Game event: " + clientMessage.getGameEvent());
+
 					switch (clientMessage.getGameEvent().getName()) {
-						case "pullNextCard":
+						case PULL_NEXT_CARD:
 							new PullNextCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							new DiscardLastPulledCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							new PassTurnToNextPlayerGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							//sessionHandler.getNextCardAndBroadcast(currentGame);
+							break;
+						case PLAY_CARD:
+							Long requestedCardId = clientMessage.getGameEvent().getCid();
+							if (defensiveCheckDoesPlayerHaveCardOnHand(requestedCardId, activePlayer)) {
+								Card requestedCard = activePlayer.getCardOnHandById(requestedCardId);
+								new RemoveCardFromHandGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+								new DiscardTopmostCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+								new SetTopmostCardGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+
+							} else {
+								LOGGER.info(String.format(INVALID_CARD_PLAYED_MSG_FORMAT, sessionId, requestedCardId));
+								// akcja jest nieprawidlowa, a gracz ma zablokowana reke - trzeba odblokowac graczowi reke
+								MessageBuilder activePlayerMB = sessionIdToMessageBuilderMap.get(sessionId);
+								activePlayerMB.frontState(FrontStateBuilder.newInstance().active(true));
+								sessionHandler.sendToSessionById(activePlayerMB, sessionId);
+								return;
+							}
 							break;
 						default:
 							LOGGER.error(String.format(UNKNOWN_GAME_EVENT_MSG_FORMAT, sessionId, clientMessage.getGameEvent().getName()));
@@ -60,6 +83,10 @@ public class ClientMessageHandler {
 
 	public static boolean defensiveCheckDoesInvocationComeFromPlayersSession(Game game, String sessionId) {
 		return null != sessionId && null != game.getPlayerByBoundSessionId(sessionId);
+	}
+
+	public static boolean defensiveCheckDoesPlayerHaveCardOnHand(Long cardId, Player activePlayer) {
+		return null != cardId && null != activePlayer && activePlayer.hasCardOnHand(cardId);
 	}
 
 	public static Map<String, MessageBuilder> initSessionMessageBuilderMap(GameDisplaySessionHandler sessionHandler) {
