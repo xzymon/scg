@@ -26,6 +26,5 @@ public class PullNextCardAndActivateHandGameAction extends AbstractGameAction {
 			}
 			activePlayer.setCanPullCard(false);
 		}
-		playerMB.frontState(MessageHelper.frontStateFromPlayer(activePlayer));
 	}
 }
