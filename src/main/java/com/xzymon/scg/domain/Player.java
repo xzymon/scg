@@ -10,11 +10,13 @@ public class Player {
 	private String sessionId;
 	private boolean active;
 	private boolean canPullCard;
+	private Integer score;
 
-	public Player(Long id, String name, List<Card> hand) {
+	public Player(Long id, String name, List<Card> hand, Integer initialScore) {
 		this.id = id;
 		this.name = name;
 		this.hand = hand;
+		this.score = initialScore;
 	}
 
 	public Long getId() {
@@ -89,5 +91,13 @@ public class Player {
 
 	public void setCanPullCard(boolean canPullCard) {
 		this.canPullCard = canPullCard;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
 	}
 }

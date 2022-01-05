@@ -87,6 +87,14 @@ public class MessageBuilder {
 		return null;
 	}
 
+	public MessageBuilder frontStateName(String name) {
+		if (null == frontState) {
+			frontState = FrontStateBuilder.newInstance();
+		}
+		frontState.name(name);
+		return this;
+	}
+
 	public MessageBuilder playerHand(HandBuilder handBuilder) {
 		this.playerHand = handBuilder;
 		return this;

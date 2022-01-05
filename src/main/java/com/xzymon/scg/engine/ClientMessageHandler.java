@@ -2,6 +2,7 @@ package com.xzymon.scg.engine;
 
 import com.xzymon.scg.communication.client.ClientMessage;
 import com.xzymon.scg.communication.client.JsonKeys;
+import com.xzymon.scg.communication.server.FrontStateBuilder;
 import com.xzymon.scg.communication.server.MessageBuilder;
 import com.xzymon.scg.communication.server.MessageHelper;
 import com.xzymon.scg.communication.server.PlayerListBuilder;
@@ -42,6 +43,7 @@ public class ClientMessageHandler {
 					switch (clientMessage.getGameEvent().getName()) {
 						case PULL_NEXT_CARD:
 							new PullNextCardAndActivateHandGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+							new IncrementPlayerScoreGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							break;
 						case PLAY_CARD:
 							if (isInPlayCardPhase(activePlayer)) {
@@ -51,6 +53,7 @@ public class ClientMessageHandler {
 									new RemoveCardFromHandGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 									new DiscardTopmostCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 									new SetTopmostCardGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+									new UpdatePlayerScoreGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 									new PassTurnToNextPlayerGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 
 								} else {
@@ -68,6 +71,7 @@ public class ClientMessageHandler {
 						default:
 							LOGGER.error(String.format(UNKNOWN_GAME_EVENT_MSG_FORMAT, sessionId, clientMessage.getGameEvent().getName()));
 					}
+					extendByFrontStateOfPlayers(sessionIdToMessageBuilderMap, currentGame);
 					extendByStateOfRegisteredPlayers(sessionIdToMessageBuilderMap, currentGame);
 					sessionHandler.sendMessages(sessionIdToMessageBuilderMap);
 				} else {
@@ -107,6 +111,15 @@ public class ClientMessageHandler {
 		PlayerListBuilder registeredPlayers = MessageHelper.registeredPlayersFromGame(game);
 		for (Map.Entry<String, MessageBuilder> entry : messageBuildersMap.entrySet()) {
 			entry.getValue().registeredPlayers(registeredPlayers);
+		}
+	}
+
+	public static void extendByFrontStateOfPlayers(Map<String, MessageBuilder> messageBuildersMap, Game game) {
+		for (Map.Entry<String, MessageBuilder> entry : messageBuildersMap.entrySet()) {
+			Player player = game.getPlayerByBoundSessionId(entry.getKey());
+			if (null != player) {
+				entry.getValue().frontState(MessageHelper.frontStateFromPlayer(player));
+			}
 		}
 	}
 }

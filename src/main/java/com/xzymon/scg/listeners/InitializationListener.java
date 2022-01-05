@@ -41,9 +41,9 @@ public class InitializationListener implements ServletContextListener {
 		game.setCardManager(cardManager);
 
 		Set<Player> players = new HashSet<>();
-		Player firstPlayer = new Player(1L, "First player", new ArrayList<>());
-		Player secondPlayer = new Player(2L, "Second player", new ArrayList<>());
-		Player thirdPlayer = new Player(3L, "Third player", new ArrayList<>());
+		Player firstPlayer = new Player(1L, "First player", new ArrayList<>(), 0);
+		Player secondPlayer = new Player(2L, "Second player", new ArrayList<>(), 0);
+		Player thirdPlayer = new Player(3L, "Third player", new ArrayList<>(), 0);
 		players.add(firstPlayer);
 		players.add(secondPlayer);
 		players.add(thirdPlayer);

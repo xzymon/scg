@@ -10,12 +10,14 @@ public class PlayerBuilder {
 	public static final String KEY_BACK_OUT = "backOut";
 	public static final String KEY_ACTIVE = "active";
 	public static final String KEY_PULL_CARD = "pullCard";
+	public static final String KEY_SCORE = "score";
 
 	private String name;
 	private String sessionId;
 	private Boolean backOut;
 	private Boolean active;
 	private Boolean pullCard;
+	private Integer score;
 
 	private PlayerBuilder() {
 	}
@@ -49,6 +51,11 @@ public class PlayerBuilder {
 		return this;
 	}
 
+	public PlayerBuilder score(Integer score) {
+		this.score = score;
+		return this;
+	}
+
 	public JSONObject build() {
 		boolean notNull = false;
 		JSONObject builder = new JSONObject();
@@ -70,6 +77,10 @@ public class PlayerBuilder {
 		}
 		if (pullCard != null) {
 			builder.put(KEY_PULL_CARD, pullCard);
+			notNull = true;
+		}
+		if (score != null) {
+			builder.put(KEY_SCORE, score);
 			notNull = true;
 		}
 		if (notNull) {

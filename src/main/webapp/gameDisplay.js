@@ -19,6 +19,7 @@ function onMessage(event) {
 		for (let rP = 0; rP < jsonMsg.registeredPlayers.length; rP++) {
 			existingPlayerEl = document.getElementById(`player${regPlayers[rP].sessionId}`);
 			if (existingPlayerEl != null) {
+				existingPlayerEl.innerText = registeredPlayerText(regPlayers[rP]);
 				setElementClassFromRegisteredPlayer(existingPlayerEl, regPlayers[rP]);
 			} else {
 				createNewPlayerNode(regPlayers[rP]);
@@ -54,6 +55,15 @@ function onMessage(event) {
 			GUI.activateHand(document.getElementById('handDiv'));
 		} else {
 			GUI.deactivateHand(document.getElementById('handDiv'));
+		}
+
+		if (jsonMsg.frontState.score != null) {
+			const playerScore = Number.parseInt(jsonMsg.frontState.score);
+			document.getElementById('score').innerText = playerScore;
+		}
+
+		if (jsonMsg.frontState.name != null) {
+			document.getElementById('headerName').innerText = jsonMsg.frontState.name;
 		}
 	}
 
@@ -94,10 +104,14 @@ function createNewPlayerNode(player) {
 	li.setAttribute('title', 'New Item');
 
 // Tekst do środka wkłada się poprzez włożenie węzła typu #text
-	li.appendChild(document.createTextNode(`[id = ${player.sessionId}] ${player.name}`));
+	li.appendChild(document.createTextNode(registeredPlayerText(player)));
 
 // podłączenie nowo utworzonego elementu do istniejącego drzewa dokumentu
 	document.querySelector('ul.collection').appendChild(li);
+}
+
+function registeredPlayerText(player) {
+	return `[id = ${player.sessionId}] ${player.name} -- score: ${player.score}`;
 }
 
 function setElementClassFromRegisteredPlayer(element, registeredPlayer) {

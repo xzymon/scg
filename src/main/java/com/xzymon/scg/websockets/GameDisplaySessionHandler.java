@@ -25,6 +25,8 @@ public class GameDisplaySessionHandler {
 	private static final String BROADCAST_BUT_SESSION_LOG_MSG_FORMAT = "broadcastButSession: sessionId=[%2$s], message=[%1$s]";
 	private static final String SEND_ONLY_TO_SESSION_LOG_MSG_FORMAT = "sendOnlyToSession: sessionId=[%2$s], message=[%1$s]";
 
+	public static final String SPECTATOR_NAME = "--Spectator--";
+
 	private final Map<String, Object> applicationAttributesMap = new HashMap<>();
 	private final Map<String, Session> sessions = new HashMap<>();
 
@@ -114,18 +116,13 @@ public class GameDisplaySessionHandler {
 				game.makeNextPlayerActive();
 				Player activePlayer = game.getActivePlayer();
 				activePlayer.setCanPullCard(true);
-				messageBuildersMap.get(session.getId()).frontState(MessageHelper.frontStateFromPlayer(activePlayer));
-			} else {
-				messageBuildersMap.get(session.getId()).frontState(MessageHelper.frontStateActive(false, false));
 			}
 
-			//MessageBuilder broadcastButNewPlayerMB = MessageBuilder.newInstance().newPlayer(MessageHelper.fromPlayer(unoccupiedPlayer));
 			MessageBuilder newPlayerMB = messageBuildersMap.get(session.getId());
 
 			topmostCard = game.getLastPulledCard();
 			if (topmostCard != null) {
 				CardBuilder topmostCardCB = MessageHelper.topmostCardFromGame(game);
-				//broadcastButNewPlayerMB.topmostCard(topmostCardCB);
 				newPlayerMB.topmostCard(topmostCardCB);
 			}
 
@@ -138,8 +135,15 @@ public class GameDisplaySessionHandler {
 
 			newPlayerMB.playerHand(HandBuilder.newInstance().newCards(MessageHelper.fromCards(playerHand)));
 
+			ClientMessageHandler.extendByFrontStateOfPlayers(messageBuildersMap, game);
+			newPlayerMB.frontStateName(unoccupiedPlayer.getName());
 			ClientMessageHandler.extendByStateOfRegisteredPlayers(messageBuildersMap, game);
 			sendMessages(messageBuildersMap);
+		} else {
+			MessageBuilder spectatorMB = MessageBuilder.newInstance();
+			spectatorMB.registeredPlayers(MessageHelper.registeredPlayersFromGame(game));
+			spectatorMB.frontState(FrontStateBuilder.newInstance().activePullCard(false).name(SPECTATOR_NAME));
+			sendToSessionById(spectatorMB, session.getId());
 		}
 	}
 
