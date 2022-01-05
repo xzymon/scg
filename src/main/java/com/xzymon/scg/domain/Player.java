@@ -9,6 +9,7 @@ public class Player {
 	private boolean backOut;
 	private String sessionId;
 	private boolean active;
+	private boolean canPullCard;
 
 	public Player(Long id, String name, List<Card> hand) {
 		this.id = id;
@@ -80,5 +81,13 @@ public class Player {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public boolean canPullCard() {
+		return canPullCard;
+	}
+
+	public void setCanPullCard(boolean canPullCard) {
+		this.canPullCard = canPullCard;
 	}
 }

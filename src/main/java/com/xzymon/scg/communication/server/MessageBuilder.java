@@ -44,7 +44,7 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public JSONObject buildNewPlayer() {
+	private JSONObject buildNewPlayer() {
 		if (null != newPlayer) {
 			return newPlayer.build();
 		}
@@ -56,7 +56,7 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public JSONObject buildRemovedPlayer() {
+	private JSONObject buildRemovedPlayer() {
 		if (null != removedPlayer) {
 			return removedPlayer.build();
 		}
@@ -68,7 +68,7 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public JSONObject buildTopmostCard() {
+	private JSONObject buildTopmostCard() {
 		if (null != topmostCard) {
 			return topmostCard.build();
 		}
@@ -80,7 +80,7 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public JSONObject buildFrontState() {
+	private JSONObject buildFrontState() {
 		if (null != frontState) {
 			return frontState.build();
 		}
@@ -92,7 +92,7 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public JSONObject buildPlayerHand() {
+	private JSONObject buildPlayerHand() {
 		if (null != playerHand) {
 			return playerHand.build();
 		}

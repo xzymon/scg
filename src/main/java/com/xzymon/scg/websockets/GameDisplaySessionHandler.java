@@ -112,9 +112,11 @@ public class GameDisplaySessionHandler {
 			game.getPlayersCycle().add(unoccupiedPlayer);
 			if (game.getActivePlayer() == null) {
 				game.makeNextPlayerActive();
-				messageBuildersMap.get(session.getId()).frontState(FrontStateBuilder.newInstance().active(true));
+				Player activePlayer = game.getActivePlayer();
+				activePlayer.setCanPullCard(true);
+				messageBuildersMap.get(session.getId()).frontState(MessageHelper.frontStateFromPlayer(activePlayer));
 			} else {
-				messageBuildersMap.get(session.getId()).frontState(FrontStateBuilder.newInstance().active(false));
+				messageBuildersMap.get(session.getId()).frontState(MessageHelper.frontStateActive(false, false));
 			}
 
 			//MessageBuilder broadcastButNewPlayerMB = MessageBuilder.newInstance().newPlayer(MessageHelper.fromPlayer(unoccupiedPlayer));
@@ -174,7 +176,8 @@ public class GameDisplaySessionHandler {
 			for (Map.Entry<String, MessageBuilder> entry : messageBuildersMap.entrySet()) {
 				entry.getValue().removedPlayer(MessageHelper.fromPlayer(playerToRemove));
 				if (passTurnToNextPlayer && entry.getKey().equals(newActivePlayerSessionId)) {
-					entry.getValue().frontState(MessageHelper.frontStateActive(true));
+					newActivePlayer.setCanPullCard(true);
+					entry.getValue().frontState(MessageHelper.frontStateFromPlayer(newActivePlayer));
 				}
 			}
 			sendMessages(messageBuildersMap);

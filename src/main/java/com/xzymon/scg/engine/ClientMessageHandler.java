@@ -2,7 +2,6 @@ package com.xzymon.scg.engine;
 
 import com.xzymon.scg.communication.client.ClientMessage;
 import com.xzymon.scg.communication.client.JsonKeys;
-import com.xzymon.scg.communication.server.FrontStateBuilder;
 import com.xzymon.scg.communication.server.MessageBuilder;
 import com.xzymon.scg.communication.server.MessageHelper;
 import com.xzymon.scg.communication.server.PlayerListBuilder;
@@ -25,6 +24,7 @@ public class ClientMessageHandler {
 	private static final String POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX = " Might be a frontend security problem.";
 
 	private static final String UNKNOWN_GAME_EVENT_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Unknown " + JsonKeys.GAME_EVENT.getKey() + "." + JsonKeys.NAME.getKey() + ": %2$s";
+	private static final String INVALID_PHASE_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Client request invalid. Player is not in PLAY_CARD phase!";
 	private static final String INVALID_CARD_PLAYED_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Client request invalid. There's no such card { cid: %2$s } on player's hand!" + POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX;
 	private static final String PLAYER_TURN_SEQUENCE_BREACH_DETECTED_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Player tried to perform action, but has no right to perform it now!" + POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX;
 	private static final String SPECTATOR_ACTION_DETECTED_MSG_FORMAT = SESSION_ID_MSG_PREFIX + "Spectator tried to perform action, but spectators have no right to perform any action!" + POTENTIAL_FRONTEND_SECURITY_FAULT_SUFFIX;
@@ -41,26 +41,28 @@ public class ClientMessageHandler {
 
 					switch (clientMessage.getGameEvent().getName()) {
 						case PULL_NEXT_CARD:
-							new PullNextCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-							new DiscardLastPulledCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-							new PassTurnToNextPlayerGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-							//sessionHandler.getNextCardAndBroadcast(currentGame);
+							new PullNextCardAndActivateHandGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							break;
 						case PLAY_CARD:
-							Long requestedCardId = clientMessage.getGameEvent().getCid();
-							if (defensiveCheckDoesPlayerHaveCardOnHand(requestedCardId, activePlayer)) {
-								Card requestedCard = activePlayer.getCardOnHandById(requestedCardId);
-								new RemoveCardFromHandGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-								new DiscardTopmostCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-								new SetTopmostCardGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+							if (isInPlayCardPhase(activePlayer)) {
+								Long requestedCardId = clientMessage.getGameEvent().getCid();
+								if (defensiveCheckDoesPlayerHaveCardOnHand(requestedCardId, activePlayer)) {
+									Card requestedCard = activePlayer.getCardOnHandById(requestedCardId);
+									new RemoveCardFromHandGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+									new DiscardTopmostCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+									new SetTopmostCardGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+									new PassTurnToNextPlayerGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 
+								} else {
+									LOGGER.info(String.format(INVALID_CARD_PLAYED_MSG_FORMAT, sessionId, requestedCardId));
+									// akcja jest nieprawidlowa, a gracz ma zablokowana reke - trzeba odblokowac graczowi reke
+									MessageBuilder activePlayerMB = sessionIdToMessageBuilderMap.get(sessionId);
+									activePlayerMB.frontState(MessageHelper.frontStateActive(false, true));
+									sessionHandler.sendToSessionById(activePlayerMB, sessionId);
+									return;
+								}
 							} else {
-								LOGGER.info(String.format(INVALID_CARD_PLAYED_MSG_FORMAT, sessionId, requestedCardId));
-								// akcja jest nieprawidlowa, a gracz ma zablokowana reke - trzeba odblokowac graczowi reke
-								MessageBuilder activePlayerMB = sessionIdToMessageBuilderMap.get(sessionId);
-								activePlayerMB.frontState(FrontStateBuilder.newInstance().active(true));
-								sessionHandler.sendToSessionById(activePlayerMB, sessionId);
-								return;
+								LOGGER.error(String.format(INVALID_PHASE_MSG_FORMAT, sessionId));
 							}
 							break;
 						default:
@@ -69,11 +71,11 @@ public class ClientMessageHandler {
 					extendByStateOfRegisteredPlayers(sessionIdToMessageBuilderMap, currentGame);
 					sessionHandler.sendMessages(sessionIdToMessageBuilderMap);
 				} else {
-					LOGGER.info(String.format(PLAYER_TURN_SEQUENCE_BREACH_DETECTED_MSG_FORMAT, sessionId));
+					LOGGER.error(String.format(PLAYER_TURN_SEQUENCE_BREACH_DETECTED_MSG_FORMAT, sessionId));
 				}
 			}
 		} else {
-			LOGGER.info(String.format(SPECTATOR_ACTION_DETECTED_MSG_FORMAT, sessionId));
+			LOGGER.error(String.format(SPECTATOR_ACTION_DETECTED_MSG_FORMAT, sessionId));
 		}
 	}
 
@@ -87,6 +89,10 @@ public class ClientMessageHandler {
 
 	public static boolean defensiveCheckDoesPlayerHaveCardOnHand(Long cardId, Player activePlayer) {
 		return null != cardId && null != activePlayer && activePlayer.hasCardOnHand(cardId);
+	}
+
+	public static boolean isInPlayCardPhase(Player activePlayer) {
+		return null != activePlayer && activePlayer.isActive() && !activePlayer.canPullCard();
 	}
 
 	public static Map<String, MessageBuilder> initSessionMessageBuilderMap(GameDisplaySessionHandler sessionHandler) {

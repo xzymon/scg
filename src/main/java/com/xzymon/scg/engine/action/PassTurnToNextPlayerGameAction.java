@@ -1,8 +1,8 @@
 package com.xzymon.scg.engine.action;
 
 import com.xzymon.scg.communication.client.GameEvent;
-import com.xzymon.scg.communication.server.FrontStateBuilder;
 import com.xzymon.scg.communication.server.MessageBuilder;
+import com.xzymon.scg.communication.server.MessageHelper;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
 
@@ -20,8 +20,10 @@ public class PassTurnToNextPlayerGameAction extends AbstractGameAction {
 		game.makeNextPlayerActive();
 		Player activePlayerAfterExecution = game.getActivePlayer();
 		if (!activePlayerAfterExecution.equals(activePlayerBeforeExecution)) {
-			sessionIdToMessageBuilderMap.get(activePlayerBeforeExecution.getSessionId()).frontState(FrontStateBuilder.newInstance().active(false));
-			sessionIdToMessageBuilderMap.get(activePlayerAfterExecution.getSessionId()).frontState(FrontStateBuilder.newInstance().active(true));
+			activePlayerBeforeExecution.setCanPullCard(false);
+			sessionIdToMessageBuilderMap.get(activePlayerBeforeExecution.getSessionId()).frontState(MessageHelper.frontStateFromPlayer(activePlayerBeforeExecution));
 		}
+		activePlayerAfterExecution.setCanPullCard(true);
+		sessionIdToMessageBuilderMap.get(activePlayerAfterExecution.getSessionId()).frontState(MessageHelper.frontStateFromPlayer(activePlayerAfterExecution));
 	}
 }

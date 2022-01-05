@@ -16,6 +16,6 @@ public class ReactivateActivePlayerGameAction extends AbstractGameAction {
 	@Override
 	public void execute() {
 		MessageBuilder activePlayerMB = sessionIdToMessageBuilderMap.get(sessionId);
-		activePlayerMB.frontState(FrontStateBuilder.newInstance().active(true));
+		activePlayerMB.frontState(FrontStateBuilder.newInstance().activePullCard(true));
 	}
 }
