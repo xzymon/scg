@@ -40,6 +40,24 @@ public class Player {
 		this.hand = hand;
 	}
 
+	public boolean hasCardOnHand(Long cardId) {
+		for (Card card : this.hand) {
+			if (card.getId().equals(cardId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Card getCardOnHandById(Long cardId) {
+		for (Card card : this.hand) {
+			if (card.getId().equals(cardId)) {
+				return card;
+			}
+		}
+		return null;
+	}
+
 	public boolean isBackOut() {
 		return backOut;
 	}

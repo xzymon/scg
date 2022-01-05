@@ -1,9 +1,14 @@
+var constants = new Constants();
+
 var socket = new WebSocket("ws://localhost:8081/scg/gameDisplay");
 socket.onmessage = onMessage;
 
 let globalMessage = null;
 
+document.body.addEventListener('click', GUI.playCardFromHand);
+
 function onMessage(event) {
+	console.log('onMessage');
 	console.log(event.data);
 	let jsonMsg = JSON.parse(event.data);
 	console.log(jsonMsg);
@@ -41,51 +46,36 @@ function onMessage(event) {
 		let pullNextCardBtn = document.getElementById('pullNextCardBtn');
 		if (jsonMsg.frontState.active === true) {
 			pullNextCardBtn.disabled = false;
+			GUI.activateHand(document.getElementById('handDiv'));
 		} else {
 			pullNextCardBtn.disabled = true;
+			GUI.deactivateHand(document.getElementById('handDiv'));
 		}
 	}
 
 	if (jsonMsg.playerHand != null) {
 		let playerHand = jsonMsg.playerHand;
-		if (playerHand.length > 0) {
-			for (let phIdx = 0; phIdx < playerHand.length; phIdx++) {
-				createNewCardOnHand(playerHand[phIdx]);
-			}
-		}
+		const handDiv = document.getElementById('handDiv');
+		GUI.updateHand(handDiv, playerHand);
 	}
 }
 
 function setCardClassBasedOnCategory(cardDiv, category) {
 	if (category == "RED") {
-		setCardColor(cardDiv, 'redCard');
+		setCardColor(cardDiv, Constants.cardRed());
 	}
 	if (category == "YELLOW") {
-		setCardColor(cardDiv, 'yellowCard');
+		setCardColor(cardDiv, Constants.cardYellow());
 	}
 	if (category == "GREEN") {
-		setCardColor(cardDiv, 'greenCard');
+		setCardColor(cardDiv, Constants.cardGreen());
 	}
 	if (category == "BLUE") {
-		setCardColor(cardDiv, 'blueCard');
+		setCardColor(cardDiv, Constants.cardBlue());
 	}
 	if (category == "BLACK") {
-		setCardColor(cardDiv,'blackCard');
+		setCardColor(cardDiv,Constants.cardBlack());
 	}
-}
-
-function createNewCardOnHand(card) {
-	console.log("Inside createNewCardOnHand");
-	console.log(card);
-
-	const cardDiv = document.createElement('div');
-
-	// to nie jest unikalny id !!!
-	cardDiv.id = `cardOnHand${card.id}`;
-	setCardClassBasedOnCategory(cardDiv, card.category);
-
-	document.getElementById('handDiv').appendChild(cardDiv);
-
 }
 
 function createNewPlayerNode(player) {
@@ -135,6 +125,8 @@ function setCardColor(cardColor) {
 function setCardColor(card, color) {
 	card.setAttribute('class', color);
 }
+
+
 
 //------------------------------
 

@@ -18,6 +18,7 @@ public class ClientMessageValidator {
 		jsonValidationWrapper
 				.expect(JsonKeys.GAME_EVENT).objectType().end()
 				.expect(JsonKeys.GAME_EVENT, JsonKeys.NAME).stringType().end()
+				.expect(JsonKeys.GAME_EVENT, JsonKeys.CID).longType().end()
 		;
 
 		jsonValidationWrapper.checkExpectedKeysPrescence();

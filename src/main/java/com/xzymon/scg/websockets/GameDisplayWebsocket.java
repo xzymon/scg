@@ -44,6 +44,7 @@ public class GameDisplayWebsocket {
 
 	@OnMessage
 	public void handleMessage(String message, Session session) {
+		LOGGER.info("Handling message: " + message);
 		JSONObject json = new JSONObject(message);
 		List<JsonValidationError> validationErrors = ClientMessageValidator.validate(json);
 		if (!validationErrors.isEmpty()) {

@@ -15,6 +15,7 @@ public class Game {
 	private Set<Player> players;
 	private PlayersCycle playersCycle;
 	private Card lastPulledCard;
+	private Card topmostCard;
 
 	public Game() {
 		this.playersCycle = new PlayersCycle();
@@ -117,5 +118,13 @@ public class Game {
 
 	public void setLastPulledCard(Card lastPulledCard) {
 		this.lastPulledCard = lastPulledCard;
+	}
+
+	public Card getTopmostCard() {
+		return topmostCard;
+	}
+
+	public void setTopmostCard(Card topmostCard) {
+		this.topmostCard = topmostCard;
 	}
 }
