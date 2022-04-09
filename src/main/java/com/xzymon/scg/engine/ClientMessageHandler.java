@@ -7,9 +7,11 @@ import com.xzymon.scg.communication.server.MessageBuilder;
 import com.xzymon.scg.communication.server.MessageHelper;
 import com.xzymon.scg.communication.server.PlayerListBuilder;
 import com.xzymon.scg.domain.Card;
+import com.xzymon.scg.domain.CardCategory;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
 import com.xzymon.scg.engine.action.*;
+import com.xzymon.scg.engine.action.input.GameActionInput;
 import com.xzymon.scg.global.GlobalNames;
 import com.xzymon.scg.websockets.GameDisplaySessionHandler;
 import org.slf4j.Logger;
@@ -17,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ClientMessageHandler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClientMessageHandler.class);
@@ -43,19 +47,22 @@ public class ClientMessageHandler {
 					switch (clientMessage.getGameEvent().getName()) {
 						case PULL_NEXT_CARD:
 							new PullNextCardAndActivateHandGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-							new IncrementPlayerScoreGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
+							//new IncrementPlayerScoreGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
 							break;
 						case PLAY_CARD:
 							if (isInPlayCardPhase(activePlayer)) {
 								Long requestedCardId = clientMessage.getGameEvent().getCid();
 								if (defensiveCheckDoesPlayerHaveCardOnHand(requestedCardId, activePlayer)) {
 									Card requestedCard = activePlayer.getCardOnHandById(requestedCardId);
-									new RemoveCardFromHandGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-									new DiscardTopmostCardGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-									new SetTopmostCardGameAction(requestedCard, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-									new UpdatePlayerScoreGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-									new PassTurnToNextPlayerGameAction(sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap).execute();
-
+									Card topmostCardBeforePlayerAction = currentGame.getTopmostCard();
+									GameActionInput gameActionInput = new GameActionInput(requestedCard, topmostCardBeforePlayerAction, sessionId, clientMessage.getGameEvent(), currentGame, sessionIdToMessageBuilderMap);
+									switch (requestedCard.getCategory()) {
+										case BLACK -> categoryCardConsumer.accept(gameActionInput, blackCategoryCardScoreGameActionConsumer);
+										case BLUE -> categoryCardConsumer.accept(gameActionInput, blueCategoryCardScoreGameActionConsumer);
+										case GREEN -> categoryCardConsumer.accept(gameActionInput, greenCategoryCardScoreGameActionConsumer);
+										case YELLOW -> categoryCardConsumer.accept(gameActionInput, yellowCategoryCardScoreGameActionConsumer);
+										case RED -> categoryCardConsumer.accept(gameActionInput, redCategoryCardScoreGameActionConsumer);
+									}
 								} else {
 									LOGGER.info(String.format(INVALID_CARD_PLAYED_MSG_FORMAT, sessionId, requestedCardId));
 									// akcja jest nieprawidlowa, a gracz ma zablokowana reke - trzeba odblokowac graczowi reke
@@ -122,4 +129,32 @@ public class ClientMessageHandler {
 			}
 		}
 	}
+
+	public static BiConsumer<GameActionInput, Consumer<GameActionInput>> categoryCardConsumer = (gai, categoryCardScoreGameActionConsumer) -> {
+		new RemoveCardFromHandGameAction(gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new DiscardTopmostCardGameAction(gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		categoryCardScoreGameActionConsumer.accept(gai);
+		new SetTopmostCardGameAction(gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new PassTurnToNextPlayerGameAction(gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+	};
+
+	public static Consumer<GameActionInput> blackCategoryCardScoreGameActionConsumer = gai -> {
+		new BlackCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+	};
+
+	public static Consumer<GameActionInput> blueCategoryCardScoreGameActionConsumer = gai -> {
+		new BlueCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+	};
+
+	public static Consumer<GameActionInput> greenCategoryCardScoreGameActionConsumer = gai -> {
+		new GreenCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+	};
+
+	public static Consumer<GameActionInput> yellowCategoryCardScoreGameActionConsumer = gai -> {
+		new YellowCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+	};
+
+	public static Consumer<GameActionInput> redCategoryCardScoreGameActionConsumer = gai -> {
+		new RedCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+	};
 }
