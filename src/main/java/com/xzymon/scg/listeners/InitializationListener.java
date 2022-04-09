@@ -39,6 +39,7 @@ public class InitializationListener implements ServletContextListener {
 		Game game = new Game();
 		CardManager cardManager = initCardManager();
 		game.setCardManager(cardManager);
+		game.setTopmostCard(cardManager.enhancedNext());
 
 		Set<Player> players = new HashSet<>();
 		Player firstPlayer = new Player(1L, "First player", new ArrayList<>(), 0);
@@ -89,7 +90,7 @@ public class InitializationListener implements ServletContextListener {
 		redCards.add(new Card(5004L, "4th red card", CardCategory.RED));
 		cardManager.addCardSubset(CardSetName.RED, redCards);
 
-		cardManager.initStackFromSubsets(Arrays.asList(CardSetName.BLACK, CardSetName.BLUE, CardSetName.YELLOW, CardSetName.RED));
+		cardManager.initStackFromSubsets(Arrays.asList(CardSetName.BLACK, CardSetName.BLUE, CardSetName.GREEN, CardSetName.YELLOW, CardSetName.RED));
 
 		return cardManager;
 	}

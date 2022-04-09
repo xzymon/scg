@@ -120,7 +120,7 @@ public class GameDisplaySessionHandler {
 
 			MessageBuilder newPlayerMB = messageBuildersMap.get(session.getId());
 
-			topmostCard = game.getLastPulledCard();
+			topmostCard = game.getTopmostCard();
 			if (topmostCard != null) {
 				CardBuilder topmostCardCB = MessageHelper.topmostCardFromGame(game);
 				newPlayerMB.topmostCard(topmostCardCB);
@@ -190,7 +190,7 @@ public class GameDisplaySessionHandler {
 	}
 
 	public void showTopmostCard(Game game) {
-		Card topmostCard = game.getLastPulledCard();
+		Card topmostCard = game.getTopmostCard();
 		if (null != topmostCard) {
 			MessageBuilder topmostCardMB = MessageBuilder.newInstance().topmostCard(MessageHelper.topmostCardFromGame(game));
 			broadcast(topmostCardMB.build());
