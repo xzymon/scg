@@ -1,4 +1,5 @@
 var constants = new Constants();
+const gameLog = new GameLog();
 
 var socket = new WebSocket("ws://localhost:8081/scg/gameDisplay");
 socket.onmessage = onMessage;
@@ -72,6 +73,31 @@ function onMessage(event) {
 		const handDiv = document.getElementById('handDiv');
 		GUI.updateHand(handDiv, playerHand);
 	}
+
+	if (jsonMsg.newGameLogMessages != null) {
+		let newGameLogMessages = jsonMsg.newGameLogMessages;
+		const gameLogDomElement = document.getElementById('game-log-container');
+		gameLog.createNewGameLogMessages(gameLogDomElement, newGameLogMessages);
+	}
+}
+
+function invokeCreate() {
+	const newGameLogMessages=
+		[
+			{
+				"content": "$player plays :blue-category-card$playedCardDescription and gains $scoreChange",
+				"vars": [
+					{"name":"player","value":"First player","class":"initiator","color":"#00ff00"},
+					{"name":"playedCardDescription","value":"1st blue card","class":"initiator","color":"#0000ff"},
+					{"name":"scoreChange","value":"15","class":"scoreChangePositive","color":"#0f7f12"},
+				]
+			}
+			//{"player": {"name":"First player", "color": "#00ff00"},"topmostCard":{"description":"1st blue card","id":2001,"category":"BLUE"},"playedCard":{"description":"1st blue card","id":2001,"category":"BLUE"},"score":{"change":15,"result":70}},
+			//{"player": {"name":"Second player", "color": "#ff0000"},"topmostCard":{"description":"1st blue card","id":2001,"category":"BLUE"},"playedCard":{"description":"3rd green card","id":3003,"category":"GREEN"},"score":{"change":15,"result":70}},
+			//{"player": {"name":"First player", "color": "#00ff00"},"topmostCard":{"description":"3rd green card","id":3003,"category":"GREEN"},"playedCard":{"description":"4th blue card","id":2004,"category":"BLUE"},"score":{"change":-15,"result":70}},
+		]
+	const gameLogDomElement = document.getElementById('game-log-container');
+	gameLog.createNewGameLogMessages(gameLogDomElement, newGameLogMessages);
 }
 
 function setCardClassBasedOnCategory(cardDiv, category) {

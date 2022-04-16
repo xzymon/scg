@@ -4,33 +4,57 @@
 	<meta charset="UTF-8">
 	<title>Simple Card Game - The Game!</title>
 	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="gameLog.css">
 </head>
 <body>
-	<h1 id="headerName">Simple Card Game - The Game!</h1>
-	<div id="players">
-		<ul class="collection">
-		</ul>
-	</div>
+<h1 id="headerName">Simple Card Game - The Game!</h1>
 
-	<div id="scoreDiv">
-		<span id="score"></span>
-	</div>
+<div class="screenWrapper">
+	<div class="mainWrapper">
+		<div id="players">
+			<ul class="collection">
 
-	<div id="centralDiv" class="centralArea">
-		<div id="getCard">
-			<form id='nextCardForm'>
-				<input id="pullNextCardBtn" type='button' value='Get Next Card' onClick='pullNextCard();'/>
-			</form>
+			</ul>
 		</div>
-		<div id="topmostCard" class="emptyCard">
+
+		<div id="scoreDiv">
+			<span id="score"></span>
+		</div>
+
+		<div id="centralDiv" class="centralArea">
+			<div id="getCard">
+				<form id='nextCardForm'>
+					<input id="pullNextCardBtn" type='button' value='Get Next Card' onClick='pullNextCard();'/>
+				</form>
+			</div>
+			<div id="topmostCard" class="emptyCard">
+
+			</div>
+		</div>
+
+		<div id="handDiv">
+
 		</div>
 	</div>
+	<div class="mainHistorySpacer">
 
-	<div id="handDiv">
 	</div>
+	<div class="historyWrapper">
+		<div class="window">
+			<div class="msg-list-wrapper-split">
+				<div id="game-log-container"
+				     style="width: 100%; user-select: text; cursor: text; padding-bottom: 4px;">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
 
-	<script src="constants.js"></script>
-	<script src="gui.js"></script>
-	<script src="gameDisplay.js"></script>
+
+<script src="gameLog.js"></script>
+<script src="constants.js"></script>
+<script src="gui.js"></script>
+<script src="gameDisplay.js"></script>
 </body>
 </html>

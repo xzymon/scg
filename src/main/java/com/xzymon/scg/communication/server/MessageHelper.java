@@ -1,10 +1,12 @@
 package com.xzymon.scg.communication.server;
 
 import com.xzymon.scg.domain.Card;
+import com.xzymon.scg.domain.CardCategory;
 import com.xzymon.scg.domain.Game;
 import com.xzymon.scg.domain.Player;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MessageHelper {
 
@@ -63,5 +65,21 @@ public class MessageHelper {
 		boolean hand = player.isActive() && !player.canPullCard();
 		Integer score = player.getScore();
 		return FrontStateBuilder.newInstance().activePullCard(pullCard).activeHand(hand).score(score);
+	}
+
+	public static GameLogBuilder standardPlayCardActionGameLog(Player player, Card playedCard, Integer scoreChange) {
+		return GameLogBuilder.newInstance()
+				       .content(GameLogHelper.contentStandardPlayCardAction(playedCard.getCategory()))
+				       .addVar(GameLogVariableBuilder.newInstance()
+						               .name(GameLogHelper.VAR_NAME_PLAYER)
+						               .value(player.getName())
+						               .cssClass(GameLogHelper.VAR_CSS_CLASS_INITIATOR)
+						               .color(GameLogHelper.VAR_COLOR_ONLY_FULL_GREEN_HEX))
+				       .addVar(GameLogVariableBuilder.newInstance()
+						               .name(GameLogHelper.VAR_NAME_PLAY_CARD_DESCRIPTION)
+						               .value(playedCard.getDescription())
+						               .cssClass(GameLogHelper.VAR_CSS_CLASS_INITIATOR)
+						               .color(playedCard.getCategory().name().toLowerCase(Locale.ROOT)))
+				       .addVar(GameLogHelper.varScoreChange(scoreChange));
 	}
 }

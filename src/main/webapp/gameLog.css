@@ -1,0 +1,47 @@
+.msgContainer {
+
+}
+
+.msgTimestamp {
+    width: auto;
+    position: relative;
+    display: inline-block;
+    padding-right: 8px;
+    vertical-align: top;
+}
+
+.msgBody {
+    width: auto;
+    max-width: 86%;
+    height: auto;
+    position: relative;
+    display: inline-block;
+}
+
+.initiator {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.scoreChangePositive {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+    font-weight: bold;
+    padding-right: 4px;
+    color: #0f7f12;
+}
+
+.scoreChangeNegative {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+    font-weight: bold;
+    padding-right: 4px;
+    color: #990000;
+}

@@ -9,20 +9,19 @@ import com.xzymon.scg.domain.Player;
 import java.util.Map;
 
 public class GreenCategoryCardScoreGameAction extends AbstractCategoryCardScoreGameAction {
-	public GreenCategoryCardScoreGameAction(Card cardToBeCovered, String sessionId, GameEvent gameEvent, Game game, Map<String, MessageBuilder> sessionIdToMessageBuilderMap) {
-		super(cardToBeCovered, sessionId, gameEvent, game, sessionIdToMessageBuilderMap);
+	public GreenCategoryCardScoreGameAction(Card cardToBeCovered, Card cardInAction, String sessionId, GameEvent gameEvent, Game game, Map<String, MessageBuilder> sessionIdToMessageBuilderMap) {
+		super(cardToBeCovered, cardInAction, sessionId, gameEvent, game, sessionIdToMessageBuilderMap);
 	}
 
-	@Override
-	public void execute() {
-		Player activePlayer = game.getPlayerByBoundSessionId(sessionId);
-		Integer score = activePlayer.getScore();
+	public int getScoreChangeByCategoryOfCardToBeCovered() {
+		Integer scoreChange = 0;
 		switch (cardToBeCovered.getCategory()) {
-			case BLACK -> activePlayer.setScore(score + 22);
-			case BLUE -> activePlayer.setScore(score + 10);
-			case GREEN -> activePlayer.setScore(score + 4);
-			case YELLOW -> activePlayer.setScore(score + 1);
-			case RED -> activePlayer.setScore(score - 2);
+			case BLACK -> scoreChange = 22;
+			case BLUE -> scoreChange = 10;
+			case GREEN -> scoreChange = 4;
+			case YELLOW -> scoreChange = 1;
+			case RED -> scoreChange = 2;
 		}
+		return scoreChange;
 	}
 }
