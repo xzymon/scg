@@ -1,3 +1,45 @@
+.screenWrapper {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.mainWrapper {
+    width: 70%;
+    height: auto;
+    position: relative;
+    display: inline-block;
+}
+
+.mainHistorySpacer {
+    width: 1%;
+    height: 80%;
+    position: relative;
+    display: inline-block;
+}
+
+.historyWrapper {
+    width: 28%;
+    height: 80%;
+    position: absolute;
+    display: inline-block;
+    background-color: #1e5cfb;
+}
+
+.window {
+    height: 100%;
+    background-color: #AAAA00;
+}
+
+.msg-list-wrapper-split {
+    box-sizing: border-box;
+    overflow: auto;
+    margin: 0px auto 5px;
+    padding: 5px;
+    height: 775px;
+    line-height: 16pt;
+}
+
 .player {
     background-color: cadetblue;
 }

@@ -139,22 +139,22 @@ public class ClientMessageHandler {
 	};
 
 	public static Consumer<GameActionInput> blackCategoryCardScoreGameActionConsumer = gai -> {
-		new BlackCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new BlackCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
 	};
 
 	public static Consumer<GameActionInput> blueCategoryCardScoreGameActionConsumer = gai -> {
-		new BlueCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new BlueCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
 	};
 
 	public static Consumer<GameActionInput> greenCategoryCardScoreGameActionConsumer = gai -> {
-		new GreenCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new GreenCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
 	};
 
 	public static Consumer<GameActionInput> yellowCategoryCardScoreGameActionConsumer = gai -> {
-		new YellowCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new YellowCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
 	};
 
 	public static Consumer<GameActionInput> redCategoryCardScoreGameActionConsumer = gai -> {
-		new RedCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
+		new RedCategoryCardScoreGameAction(gai.cardToBeCovered(), gai.playedCard(), gai.sessionId(), gai.gameEvent(), gai.game(), gai.sessionIdToMessageBuilderMap()).execute();
 	};
 }

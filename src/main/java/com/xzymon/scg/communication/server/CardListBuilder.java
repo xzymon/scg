@@ -30,8 +30,8 @@ public class CardListBuilder {
 	public JSONArray build() {
 		if (!cards.isEmpty()) {
 			JSONArray result = new JSONArray();
-			for (JSONObject player : cards) {
-				result.put(player);
+			for (JSONObject card : cards) {
+				result.put(card);
 			}
 			return result;
 		}

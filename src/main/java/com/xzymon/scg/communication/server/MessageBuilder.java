@@ -11,12 +11,16 @@ public class MessageBuilder {
 	public static final String KEY_FRONT_STATE = "frontState";
 	public static final String KEY_PLAYER_HAND = "playerHand";
 
-	PlayerListBuilder registeredPlayers;
-	PlayerBuilder newPlayer;
-	PlayerBuilder removedPlayer;
-	CardBuilder topmostCard;
-	FrontStateBuilder frontState;
-	HandBuilder playerHand;
+	public static final String KEY_NEW_GAME_LOG_MESSAGES = "newGameLogMessages";
+
+	private PlayerListBuilder registeredPlayers;
+	private PlayerBuilder newPlayer;
+	private PlayerBuilder removedPlayer;
+	private CardBuilder topmostCard;
+	private FrontStateBuilder frontState;
+	private HandBuilder playerHand;
+
+	private GameLogListBuilder newGameLogMessages;
 
 	private MessageBuilder() {}
 
@@ -107,6 +111,21 @@ public class MessageBuilder {
 		return null;
 	}
 
+	public MessageBuilder newGameLogMessages(GameLogListBuilder gameLogListBuilder) {
+		this.newGameLogMessages = gameLogListBuilder;
+		return this;
+	}
+
+	private JSONArray buildNewGameLogMessages() {
+		if (null != newGameLogMessages) {
+			JSONArray array = newGameLogMessages.build();
+			if (!array.isEmpty()) {
+				return array;
+			}
+		}
+		return null;
+	}
+
 	public MessageBuilder removeOnPlayerHand(CardBuilder cardBuilder) {
 		if (null == playerHand) {
 			playerHand = HandBuilder.newInstance();
@@ -128,6 +147,14 @@ public class MessageBuilder {
 			playerHand = HandBuilder.newInstance();
 		}
 		playerHand.addNewCard(cardBuilder);
+		return this;
+	}
+
+	public MessageBuilder newGameLogMessage(GameLogBuilder gameLogBuilder) {
+		if (null == newGameLogMessages) {
+			newGameLogMessages = GameLogListBuilder.newInstance();
+		}
+		newGameLogMessages.add(gameLogBuilder);
 		return this;
 	}
 
@@ -162,6 +189,11 @@ public class MessageBuilder {
 		JSONObject playerHand = buildPlayerHand();
 		if (null != playerHand) {
 			result.put(KEY_PLAYER_HAND, playerHand);
+			notNull = true;
+		}
+		JSONArray newGameLogMessages = buildNewGameLogMessages();
+		if (null != newGameLogMessages) {
+			result.put(KEY_NEW_GAME_LOG_MESSAGES, newGameLogMessages);
 			notNull = true;
 		}
 		if (notNull) {
